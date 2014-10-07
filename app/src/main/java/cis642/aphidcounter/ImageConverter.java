@@ -7,6 +7,7 @@ import android.widget.ImageView;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
 import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
 
@@ -28,10 +29,19 @@ public class ImageConverter {
     private Mat convertedImage;
 
     /**
+     * Constructs a new ImageConverter object.
+     */
+    public ImageConverter() {
+        this.source = new Mat();
+        this.convertedImage = new Mat();
+    }
+
+    /**
      * Sets the source image matrix.
      * @param source The source image's matrix.
      */
-    public void SetSource(Mat source) {
+
+    public void setSource(Mat source) {
         this.source = source;
     }
 
@@ -39,7 +49,7 @@ public class ImageConverter {
      * Gets the source image matrix.
      * @return THe source image's matrix.
      */
-    public Mat GetSource() {
+    public Mat getSource() {
         return this.source;
     }
 
@@ -47,28 +57,19 @@ public class ImageConverter {
      * Gets the converted image's matrix.
      * @return The converted image's matrix.
      */
-    public Mat GetConvertedImage() {
+    public Mat getConvertedImage() {
         return this.convertedImage;
-    }
-
-    /**
-     * Constructs a new ImageConverter object.
-     */
-    public ImageConverter() {
-        this.source = new Mat();
     }
 
     /**
      * Algorithm for converting the original color image to a black and white binary image.
      */
     public void ConvertImage() {
-        convertedImage = new Mat();
-        //Imgproc.medianBlur(source, convertedImage, 15);
-        //Imgproc.equalizeHist(source, convertedImage);
-
-        // Adjust the contrast and brightness of the image.
-        // The 3rd parameter handles contrast, the 4th parameter handles brightness.
-        source.convertTo(convertedImage, -1, 1.0, -50.0);
+        Imgproc.cvtColor(source, convertedImage, Imgproc.COLOR_RGB2GRAY);
+        convertedImage.convertTo(convertedImage, -1, 1.0, -50.0);
+        Mat element = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_ELLIPSE,new Size(5,5));
+        Imgproc.dilate(convertedImage,convertedImage,element);
+        Imgproc.medianBlur(convertedImage,convertedImage, 5);
     }
 
 }

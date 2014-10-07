@@ -1,13 +1,16 @@
 package cis642.aphidcounter;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import org.opencv.android.OpenCVLoader;
@@ -21,7 +24,8 @@ import static cis642.aphidcounter.R.drawable.ic_launcher;
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener {
 
-    Button take_picture_button;
+    Button testing_process;
+    Button take_photo;
     ImageView aphid_image;
     ImageConverter imageConverter;
 
@@ -35,8 +39,20 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         /**
          * Initialize the Take Picture button.
          */
-        take_picture_button = (Button) findViewById(R.id.take_picture_button);
-        take_picture_button.setOnClickListener(this);
+
+        testing_process = (Button) findViewById(R.id.testing_button);
+        testing_process.setOnClickListener(this);
+
+        take_photo = (Button) findViewById(R.id.examine_photo);
+        take_photo.setOnClickListener(
+            new ImageButton.OnClickListener(){
+                @Override
+                public void onClick(View view){
+                    Intent myIntent = new Intent(view.getContext(), TakePhotos.class);
+                    startActivityForResult(myIntent,0);
+                }
+            }
+        );
     }
 
 
@@ -59,8 +75,11 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         return super.onOptionsItemSelected(item);
     }
 
+
+
     @Override
     public void onClick(View view) {
+        Log.i("PROCESS TRACE", "Doing image processing");
 
         Mat source = new Mat();
         Mat convertedImage = new Mat();
@@ -69,12 +88,11 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         try {
             // Load the image resource as a Mat:
-            source = Utils.loadResource(MainActivity.this, R.drawable.bw_original2,
-                                                           Highgui.CV_LOAD_IMAGE_GRAYSCALE);
+            source = Utils.loadResource(MainActivity.this, R.drawable.test_img);
 
-            imageConverter.SetSource(source);                       // Set the source Mat
+            imageConverter.setSource(source);                       // Set the source Mat
             imageConverter.ConvertImage();                          // Convert the image Mat
-            convertedImage = imageConverter.GetConvertedImage();    // Get the converted Image Mat
+            convertedImage = imageConverter.getConvertedImage();    // Get the converted Image Mat
 
             // Create a bitmap to store the converted image:
             Bitmap bmConvertedImage = Bitmap.createBitmap(convertedImage.cols(),
@@ -84,7 +102,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             Utils.matToBitmap(convertedImage, bmConvertedImage);    // Convert the Mat to bitmap
 
             // Get the imageview of the pic shown on the app screen:
-            ImageView ivAphidPic = (ImageView) findViewById(R.id.aphid_image);
+            ImageView ivAphidPic = (ImageView) findViewById(R.id.for_testing_image);
 
             // Update the image shown on the app screen to the newly converted image:
             ivAphidPic.setImageBitmap(bmConvertedImage);
