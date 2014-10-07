@@ -3,6 +3,7 @@ package cis642.aphidcounter;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +17,7 @@ public class TakePhotos extends Activity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i("PROCESS TRACE", "inTakePhotos");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.take_photos);
         Button next = (Button) findViewById(R.id.accessCameraButton);

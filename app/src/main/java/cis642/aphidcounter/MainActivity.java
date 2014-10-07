@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,8 +39,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         /**
          * Initialize the Take Picture button.
          */
+
         testing_process = (Button) findViewById(R.id.testing_button);
         testing_process.setOnClickListener(this);
+
         take_photo = (Button) findViewById(R.id.examine_photo);
         take_photo.setOnClickListener(
             new ImageButton.OnClickListener(){
@@ -76,6 +79,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
+        Log.i("PROCESS TRACE", "Doing image processing");
 
         Mat source = new Mat();
         Mat convertedImage = new Mat();
@@ -84,12 +88,11 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         try {
             // Load the image resource as a Mat:
-            source = Utils.loadResource(MainActivity.this, R.drawable.bw_original2,
-                                                           Highgui.CV_LOAD_IMAGE_GRAYSCALE);
+            source = Utils.loadResource(MainActivity.this, R.drawable.test_img);
 
-            imageConverter.SetSource(source);                       // Set the source Mat
+            imageConverter.setSource(source);                       // Set the source Mat
             imageConverter.ConvertImage();                          // Convert the image Mat
-            convertedImage = imageConverter.GetConvertedImage();    // Get the converted Image Mat
+            convertedImage = imageConverter.getConvertedImage();    // Get the converted Image Mat
 
             // Create a bitmap to store the converted image:
             Bitmap bmConvertedImage = Bitmap.createBitmap(convertedImage.cols(),
