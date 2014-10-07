@@ -4,6 +4,21 @@
     <string name="app_name">AphidCounter</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="take_picture">Take Picture</string>
+    <string name="testing_process">Button For Testing</string>
+    <string name="bug_prompt">Choose a Bug</string>
+    <string name="crop_prompt">Choose a Crop Type</string>
+    <string name="take_photo">Examine Photo</string>
+
+    <string-array name = "bugTypes">
+        <item>Aphid</item>
+        <item>Mosquito</item>
+        <item>Bee</item>
+    </string-array>
+
+    <string-array name = "cropTypes">
+        <item>Soy</item>
+        <item>Corn</item>
+        <item>Wheat</item>
+    </string-array>
 
 </resources>
