@@ -6,11 +6,13 @@ import android.os.Environment;
 import android.widget.ImageView;
 
 import org.opencv.android.Utils;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
-
+import org.opencv.photo.Photo;
 import java.io.File;
 
 /**
@@ -65,11 +67,25 @@ public class ImageConverter {
      * Algorithm for converting the original color image to a black and white binary image.
      */
     public void ConvertImage() {
-        Imgproc.cvtColor(source, convertedImage, Imgproc.COLOR_RGB2GRAY);
-        convertedImage.convertTo(convertedImage, -1, 1.0, -50.0);
-        Mat element = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_ELLIPSE,new Size(5,5));
-        Imgproc.dilate(convertedImage,convertedImage,element);
-        Imgproc.medianBlur(convertedImage,convertedImage, 5);
+        Mat grayscaleImage = source.clone() , noiceReducedImage;
+        //converts color to grayscale
+        Imgproc.cvtColor(source, grayscaleImage, Imgproc.COLOR_RGB2GRAY);
+
+        //Intensity/contrast
+        Photo.fastNlMeansDenoising(grayscaleImage,convertedImage);
+        Imgproc.equalizeHist(grayscaleImage,convertedImage);
+
+        //Removing background
+        //Mat background = grayscaleImage.clone();
+        //Mat backgroundElement = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(grayscaleImage.width(),grayscaleImage.height()));
+        //Imgproc.dilate(background,background,backgroundElement);
+       // Core.subtract(convertedImage,background,convertedImage);
+        //Imgproc.cvtColor(convertedImage,convertedImage,Imgproc.FLOODFILL_FIXED_RANGE);
+
+        //convertedImage.convertTo(convertedImage, -1, 1.0, -50.0);
+        //Mat element = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_ELLIPSE,new Size(5,5));
+        //Imgproc.dilate(convertedImage,convertedImage,element);
+        //Imgproc.medianBlur(convertedImage,convertedImage, 5);
     }
 
 }
