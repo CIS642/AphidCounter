@@ -1,24 +1,24 @@
 package cis642.aphidcounter;
 
+import android.os.Bundle;
 import android.app.Activity;
+
+import android.widget.ImageView;
+import android.widget.Button;
+import android.view.View;
+import android.net.Uri;
 import android.content.Intent;
+import android.provider.MediaStore;
+import java.io.File;
+import android.os.Environment;
+import android.util.Log;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+import java.util.Date;
+import android.widget.Toast;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.Toast;
-
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 public class CapturePhoto extends Activity {
 
