@@ -1,4 +1,4 @@
-package com.example.pruitt93.test;
+package cis642.aphidcounter;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -10,6 +10,9 @@ import android.content.Intent;
 import android.view.View.OnClickListener;
 import android.app.Activity;
 import android.widget.Button;
+
+import cis642.aphidcounter.R;
+import cis642.aphidcounter.TakePhotos;
 
 
 public class MyActivity extends Activity {
@@ -32,7 +35,7 @@ public class MyActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.my, menu);
+        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
