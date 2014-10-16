@@ -1,14 +1,18 @@
 package cis642.aphidcounter;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
+import java.lang.Object;
 import android.view.View;
+import android.content.Intent;
 import android.view.View.OnClickListener;
+import android.app.Activity;
 import android.widget.Button;
+import android.widget.Spinner;
+import android.content.ContentValues;
 
 /**
  * Created by JacobLPruitt on 9/29/2014.
@@ -17,11 +21,10 @@ public class TakePhotos extends Activity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i("PROCESS TRACE", "inTakePhotos");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.take_photos);
         Button next = (Button) findViewById(R.id.accessCameraButton);
-        next.setOnClickListener(new OnClickListener() {
+        next.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent myIntent = new Intent(view.getContext(), CapturePhoto.class);
                 startActivityForResult(myIntent, 0);
