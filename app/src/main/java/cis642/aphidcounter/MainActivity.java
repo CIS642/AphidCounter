@@ -88,25 +88,24 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         try {
             // Load the image resource as a Mat:
-            source = Utils.loadResource(MainActivity.this, R.drawable.test_img);
+            source = Utils.loadResource(MainActivity.this, R.drawable.test_img2);
 
             imageConverter.setSource(source);                       // Set the source Mat
             imageConverter.ConvertImage();                          // Convert the image Mat
-            convertedImage = imageConverter.getConvertedImage();    // Get the converted Image Mat
 
             // Create a bitmap to store the converted image:
-            Bitmap bmConvertedImage = Bitmap.createBitmap(convertedImage.cols(),
-                                                          convertedImage.rows(),
+            Bitmap bmConvertedImage = Bitmap.createBitmap(source.cols(),
+                                                          source.rows(),
                                                           Bitmap.Config.ARGB_8888);
 
-            Utils.matToBitmap(convertedImage, bmConvertedImage);    // Convert the Mat to bitmap
+            Utils.matToBitmap(imageConverter.getConvertedImage(), bmConvertedImage);    // Convert the Mat to bitmap
 
             // Get the imageview of the pic shown on the app screen:
             ImageView ivAphidPic = (ImageView) findViewById(R.id.for_testing_image);
 
             // Update the image shown on the app screen to the newly converted image:
             ivAphidPic.setImageBitmap(bmConvertedImage);
-
+            bmConvertedImage.recycle();
         } catch(Exception e){
             e.printStackTrace();
         }
