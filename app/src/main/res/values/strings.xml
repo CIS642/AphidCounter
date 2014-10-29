@@ -9,16 +9,18 @@
     <string name="crop_prompt">Choose a Crop Type</string>
     <string name="take_photo">Examine Photo</string>
 
-    <string-array name = "bugTypes">
+    <string-array name="bugTypes">
         <item>Aphid</item>
         <item>Mosquito</item>
         <item>Bee</item>
     </string-array>
-
-    <string-array name = "cropTypes">
+    <string-array name="cropTypes">
         <item>Soy</item>
         <item>Corn</item>
         <item>Wheat</item>
     </string-array>
+
+    <string name="title_activity_view_history">ViewHistory</string>
+    <string name="title_activity_view_photo_set">ViewPhotoSet</string>
 
 </resources>

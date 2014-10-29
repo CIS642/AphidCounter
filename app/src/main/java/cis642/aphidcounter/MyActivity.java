@@ -21,10 +21,20 @@ public class MyActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
+
         Button next = (Button) findViewById(R.id.addPhotos);
         next.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent myIntent = new Intent(view.getContext(), TakePhotos.class);
+                startActivityForResult(myIntent, 0);
+            }
+
+        });
+
+        Button viewHistory = (Button) findViewById(R.id.btnViewHistory);
+        viewHistory.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent myIntent = new Intent(view.getContext(), ViewHistory.class);
                 startActivityForResult(myIntent, 0);
             }
 
