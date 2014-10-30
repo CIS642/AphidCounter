@@ -88,7 +88,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         try {
             // Load the image resource as a Mat:
-            source = Utils.loadResource(MainActivity.this, R.drawable.test_img2);
+            source = Utils.loadResource(MainActivity.this, R.drawable.test_img3);
 
             imageConverter.setSource(source);                       // Set the source Mat
             imageConverter.ConvertImage();                          // Convert the image Mat

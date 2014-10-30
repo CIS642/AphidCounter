@@ -96,7 +96,7 @@ public class ImageConverter {
         Log.i("Process Trace","begining to create backgroundStrel");
         Log.i("Process Trace","backgroundStrel created");
         Log.i("Process Trace","Eroding convertedImage against backgroundStrel");
-        Imgproc.erode(convertedImage,convertedImage,Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(450,450)));
+        Imgproc.erode(convertedImage,background,Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(450,450)));
         Log.i("Process Trace","Final Background created");
         /*Log.i("Process Trace","begining to subtract background from image");
         Core.absdiff(convertedImage,background,convertedImage);
