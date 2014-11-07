@@ -2,9 +2,9 @@
 <merger version="2" >
 
     <dataSet config="main" >
-        <source path="C:\Users\Staton\AndroidStudioProjects\Git\AphidCounter\libraries\opencv\res" >
+        <source path="H:\workspace\git\Sprint 4\AphidCounter\libraries\opencv\res" >
             <file
-                path="C:\Users\Staton\AndroidStudioProjects\Git\AphidCounter\libraries\opencv\res\values\attrs.xml"
+                path="H:\workspace\git\Sprint 4\AphidCounter\libraries\opencv\res\values\attrs.xml"
                 qualifiers="" >
                 <declare-styleable name="CameraBridgeViewBase" >
                     <attr
@@ -26,11 +26,11 @@
                 </declare-styleable>
             </file>
         </source>
-        <source path="C:\Users\Staton\AndroidStudioProjects\Git\AphidCounter\libraries\opencv\build\generated\res\rs\debug" />
-        <source path="C:\Users\Staton\AndroidStudioProjects\Git\AphidCounter\libraries\opencv\build\generated\res\generated\debug" />
+        <source path="H:\workspace\git\Sprint 4\AphidCounter\libraries\opencv\build\generated\res\rs\debug" />
+        <source path="H:\workspace\git\Sprint 4\AphidCounter\libraries\opencv\build\generated\res\generated\debug" />
     </dataSet>
     <dataSet config="debug" >
-        <source path="C:\Users\Staton\AndroidStudioProjects\Git\AphidCounter\libraries\opencv\src\debug\res" />
+        <source path="H:\workspace\git\Sprint 4\AphidCounter\libraries\opencv\src\debug\res" />
     </dataSet>
 
 </merger>

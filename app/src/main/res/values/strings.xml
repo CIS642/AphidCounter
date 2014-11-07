@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <bool name="debugValue">true</bool>
     <string name="app_name">AphidCounter</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
@@ -8,7 +8,14 @@
     <string name="bug_prompt">Choose a Bug</string>
     <string name="crop_prompt">Choose a Crop Type</string>
     <string name="take_photo">Examine Photo</string>
-
+    <string name="about_text">ABOUT TEXT GOES HERE</string>
+    <string name="about_label">ABOUT LABEL GOES HERE</string>
+    <string name="help_text">HELP TEXT GOES HERE</string>
+    <string name="help_label">HELP LABLE GOES HERE</string>
+    <string name="instruction_text">INSTRUCTIONS TEXT GOES HERE</string>
+    <string name="instruction_label">INSTRUCTION LABEL GOED HERE</string>
+    <string name="addField_label">Add Field</string>
+    <string name="selectField_label">Select Field</string>
     <string-array name="bugTypes">
         <item>Aphid</item>
         <item>Mosquito</item>

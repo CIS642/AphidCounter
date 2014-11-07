@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <TextView
+        android:layout_width="303dp"
+        android:layout_height="0dp"
+        android:text="@string/help_text"
+        android:id="@+id/textView"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.74"
+        android:textSize="25sp"
+        android:textAlignment="center" />
+
+    <Button
+        android:layout_width="137dp"
+        android:layout_height="63dp"
+        android:text="Return"
+        android:id="@+id/helpBackButton"
+        android:layout_gravity="center_horizontal" />
+</LinearLayout>
