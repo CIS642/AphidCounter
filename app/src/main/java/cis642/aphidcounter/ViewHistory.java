@@ -13,7 +13,11 @@ import android.widget.ScrollView;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
+import cis642.aphidcounter.entity.Field;
 
+/**
+ * This class creates the UI for viewing all of the photo sets that have been previously taken.
+ */
 public class ViewHistory extends ActionBarActivity {
 
     /**
@@ -21,25 +25,37 @@ public class ViewHistory extends ActionBarActivity {
      */
     private ArrayList<PhotoSet> photoSets = new ArrayList<PhotoSet>();
 
+    /**
+     * A list of buttons that will be clicked to view each photo set in detail.
+     */
     private ArrayList<Button> buttons = new ArrayList<Button>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_view_history);
 
+        // Make this screen scrollable (have a scroll bar)
         ScrollView scrollView = new ScrollView(this);
+
         RelativeLayout relativeLayout = new RelativeLayout(this);
 
+        // Set the layout parameters
         RelativeLayout.LayoutParams relativeLayoutParams =
                 new RelativeLayout.LayoutParams(
                         RelativeLayout.LayoutParams.FILL_PARENT,
                         RelativeLayout.LayoutParams.FILL_PARENT);
 
         scrollView.setLayoutParams(relativeLayoutParams);
+
+        //TODO: get photosets from my activity extra, instead of making them here.
+        // Statically create photosets, for testing.
         TestMakePhotoSets();
+
+        // Create the buttons that will appear on the screen, which the user will click on
+        // to view the photoset.
         CreateButtons();
 
+        // Add each button to the layout.
         for (int i = 0; i < buttons.size(); i ++)
             relativeLayout.addView(buttons.get(i));
 
@@ -77,28 +93,33 @@ public class ViewHistory extends ActionBarActivity {
     private void CreateButtons() {
 
         int topMargin = 0;
-        int bottomMargin;
-        String bugType, cropType, field, date;
-        for (int i = 0; i < photoSets.size(); i++) {
 
-            bugType = photoSets.get(i).GetBugType();
-            date = photoSets.get(i).GetDateTaken();
+        // Loop through each photoset in the photosets list, and create a button that can be
+        // clicked on in order to view the photoset in detail.
+        for (int i = 0; i < photoSets.size(); i++) {
 
             // Create a button for the ith index in the photoSets list.
             Button button = new Button(this);
 
-            button.setText(photoSets.get(i).GetFieldName() + " - " +
+            // Set the text that will appear on the button.
+            // Currently displays the field name and date taken.
+            button.setText(photoSets.get(i).GetField().name() + " - " +
                            photoSets.get(i).GetDateTaken());
 
+            // The object that will be passed through the button's intent must be declared final.
+            final PhotoSet ps = photoSets.get(i);
+
+            // Create the intent for this button.
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
                     Intent myIntent = new Intent(view.getContext(), ViewPhotoSet.class);
+                    myIntent.putExtra("PhotoSet", ps);
                     startActivityForResult(myIntent, 0);
                 }
             });
 
+            // Set the layout for where the button will appear on the screen.
             topMargin = i * 60;
-            bottomMargin = topMargin + 65;
             SetButtonLayout(button, RelativeLayout.ALIGN_PARENT_LEFT, 20, topMargin, 20, 5);
 
             // Add that button the the buttons List.
@@ -127,22 +148,22 @@ public class ViewHistory extends ActionBarActivity {
     }
 
     /**
-     * For testing.
+     * For testing. Statically creates a bunch of photo sets.
      */
     private void TestMakePhotoSets() {
 
         //field type and name will be replaced by a field object containing type, name, and location.
 
-        photoSets.add(new PhotoSet("Aphid", "Soy Bean", "Field 1", new GregorianCalendar(2014, 9, 29)));
-        photoSets.add(new PhotoSet("Aphid", "Soy Bean", "Field 3", new GregorianCalendar(2014, 10, 2)));
-        photoSets.add(new PhotoSet("Aphid", "Soy Bean", "Field 4", new GregorianCalendar(2014, 10, 20)));
-        photoSets.add(new PhotoSet("Aphid", "Soy Bean", "Field 3", new GregorianCalendar(2014, 10, 22)));
-        photoSets.add(new PhotoSet("Aphid", "Soy Bean", "Field 2", new GregorianCalendar(2014, 11, 7)));
-        photoSets.add(new PhotoSet("Aphid", "Soy Bean", "Field 8", new GregorianCalendar(2014, 11, 15)));
-        photoSets.add(new PhotoSet("Aphid", "Soy Bean", "Field 6", new GregorianCalendar(2014, 11, 19)));
-        photoSets.add(new PhotoSet("Aphid", "Soy Bean", "Field 6", new GregorianCalendar(2014, 11, 20)));
-        photoSets.add(new PhotoSet("Aphid", "Soy Bean", "Field 6", new GregorianCalendar(2014, 11, 22)));
-        photoSets.add(new PhotoSet("Aphid", "Soy Bean", "Field 6", new GregorianCalendar(2014, 11, 28)));
+        photoSets.add(new PhotoSet("Aphid", new Field("Field 1", "Soy Bean"), new GregorianCalendar(2014, 9, 29)));
+        photoSets.add(new PhotoSet("Aphid", new Field("Field 5", "Soy Bean"), new GregorianCalendar(2014, 10, 2)));
+        photoSets.add(new PhotoSet("Aphid", new Field("Field 5", "Soy Bean"), new GregorianCalendar(2014, 10, 20)));
+        photoSets.add(new PhotoSet("Aphid", new Field("Field 3", "Soy Bean"), new GregorianCalendar(2014, 10, 22)));
+        photoSets.add(new PhotoSet("Aphid", new Field("Field 5", "Soy Bean"), new GregorianCalendar(2014, 11, 7)));
+        photoSets.add(new PhotoSet("Aphid", new Field("Field 2", "Soy Bean"), new GregorianCalendar(2014, 11, 15)));
+        photoSets.add(new PhotoSet("Aphid", new Field("Field 4", "Soy Bean"), new GregorianCalendar(2014, 11, 19)));
+        photoSets.add(new PhotoSet("Aphid", new Field("Field 8", "Soy Bean"), new GregorianCalendar(2014, 11, 20)));
+        photoSets.add(new PhotoSet("Aphid", new Field("Field 6", "Soy Bean"), new GregorianCalendar(2014, 11, 22)));
+        photoSets.add(new PhotoSet("Aphid", new Field("Field 7", "Soy Bean"), new GregorianCalendar(2014, 11, 28)));
     }
 
 }

@@ -21,7 +21,7 @@ import org.opencv.imgproc.*;
 
 import static cis642.aphidcounter.R.drawable.ic_launcher;
 
-
+//THIS"LL B FOR TESTNG PURPOSES
 public class MainActivity extends ActionBarActivity implements View.OnClickListener {
 
     Button testing_process;
@@ -88,7 +88,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         try {
             // Load the image resource as a Mat:
-            source = Utils.loadResource(MainActivity.this, R.drawable.test_img);
+            source = Utils.loadResource(MainActivity.this, R.drawable.test_img2_small);
 
             imageConverter.setSource(source);                       // Set the source Mat
             imageConverter.ConvertImage();                          // Convert the image Mat

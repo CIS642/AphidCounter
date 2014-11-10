@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="205dp"
+        android:layout_height="276dp"
+        android:id="@+id/examinePhotoImageView"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/ic_launcher" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:text="Select Image"
+        android:id="@+id/selectImageButton"
+        android:clickable="true"
+        android:enabled="true"
+        android:layout_below="@+id/examinePhotoImageView"
+        android:layout_alignRight="@+id/examinePhotoImageView"
+        android:layout_alignEnd="@+id/examinePhotoImageView" />
+
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:text="Process"
+        android:id="@+id/processButton"
+        android:layout_below="@+id/examinePhotoImageView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:enabled="true"
+        android:clickable="true" />
+
+</RelativeLayout>

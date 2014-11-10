@@ -37,6 +37,30 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cis642.aphidcounter.ViewHistory" />
         </activity>
+        <activity
+            android:name=".MainActivity"
+            android:label="Conversion Test"
+            android:parentActivityName=".MyActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="cis642.aphidcounter.MyActivity" />
+        </activity>
+        <activity
+            android:name=".storage.AddField"
+            android:label="@string/addField_label"
+            android:parentActivityName=".MyActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="cis642.aphidcounter.MyActivity" />
+        </activity>
+        <activity
+            android:name=".storage.SelectField"
+            android:label="@string/selectField_label"
+            android:parentActivityName=".storage.AddField" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="cis642.aphidcounter.AddField" />
+        </activity>
     </application>
 
 </manifest>

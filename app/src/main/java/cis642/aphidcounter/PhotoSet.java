@@ -1,13 +1,17 @@
 package cis642.aphidcounter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.text.DateFormatSymbols;
+
+import cis642.aphidcounter.entity.Field;
 
 /**
  * Created by Staton on 10/22/2014.
  */
-public class PhotoSet {
+public class PhotoSet implements Serializable {
 
     /**
      * The type of bugs in this set of photos.
@@ -17,14 +21,9 @@ public class PhotoSet {
     // TODO: replace field name and croptype with field object.
 
     /**
-     * The type of crop for this set of photos.
+     * The field where this set of photos was taken from.
      */
-    private String cropType;
-
-    /**
-     * The name of the crop field which this set of photos was taken in.
-     */
-    private String fieldName;
+    private Field field;
 
     /**
      * The date these photos were taken on.
@@ -40,14 +39,12 @@ public class PhotoSet {
      * Constructs a new PhotoSet object, which contains a set of photos and information about
      * the photos.
      * @param bugType The type of bug that was photographed.
-     * @param cropType The type of crop that the bug was photographed on.
-     * @param fieldName The name of the crop field that the photos were taken in.
+     * @param field The field where these photos were taken from.
      * @param dateTaken The date the photos were taken on.
      */
-    public PhotoSet(String bugType, String cropType, String fieldName, GregorianCalendar dateTaken) {
+    public PhotoSet(String bugType, Field field, GregorianCalendar dateTaken) {
         this.bugType = bugType;
-        this.cropType = cropType;
-        this.fieldName = fieldName;
+        this.field = field;
         this.dateTaken = dateTaken;
     }
 
@@ -60,19 +57,11 @@ public class PhotoSet {
     }
 
     /**
-     * Gets the type of crop the bug was photographed on.
-     * @return The crop type the bug was photographed on.
+     * Gets the field where these photos were taken from.
+     * @return The field where these photos were taken.
      */
-    public String GetCropType() {
-        return this.cropType;
-    }
-
-    /**
-     * Gets the name of the crop field that the photos were taken in.
-     * @return The name of the crop field the photos were taken in.
-     */
-    public String GetFieldName() {
-        return this.fieldName;
+    public Field GetField() {
+        return this.field;
     }
 
     /**
@@ -80,8 +69,7 @@ public class PhotoSet {
      * @return The date the photos were taken on.
      */
     public String GetDateTaken() {
-
-        return this.dateTaken.get(dateTaken.MONTH) + " " +
+        return GetMonthName(this.dateTaken.get(dateTaken.MONTH)) + " " +
                this.dateTaken.get(dateTaken.DAY_OF_MONTH) + ", " +
                this.dateTaken.get(dateTaken.YEAR);
     }
@@ -94,6 +82,17 @@ public class PhotoSet {
         return this.photos.size();
     }
 
+    /**
+     * Gets a string of the month based on an integer number.
+     * @param month Integer representing the month. 1 through 12.
+     * @return The month's name. IE, if month = 3, returns "March".
+     */
+    private String GetMonthName(int month)
+    {
+        if (month < 1 || month > 12)
+            return new DateFormatSymbols().getMonths()[0];
 
+        return new DateFormatSymbols().getMonths()[month - 1];
+    }
 
 }
