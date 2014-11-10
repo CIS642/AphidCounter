@@ -16,10 +16,8 @@ import android.widget.ImageView;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
-import org.opencv.highgui.Highgui;
-import org.opencv.imgproc.*;
 
-import static cis642.aphidcounter.R.drawable.ic_launcher;
+import cis642.aphidcounter.activity.TakePhotos;
 
 //THIS"LL B FOR TESTNG PURPOSES
 public class MainActivity extends ActionBarActivity implements View.OnClickListener {

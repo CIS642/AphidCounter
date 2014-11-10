@@ -1,4 +1,4 @@
-package cis642.aphidcounter;
+package cis642.aphidcounter.activity;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.content.ContentValues;
+
+import cis642.aphidcounter.R;
 
 /**
  * Created by JacobLPruitt on 9/29/2014.

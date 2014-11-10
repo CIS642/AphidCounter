@@ -8,6 +8,8 @@ import android.view.View;
 import android.content.Intent;
 import android.widget.Button;
 
+import cis642.aphidcounter.activity.MyActivity;
+
 /**
  * Created by JacobLPruitt on 10/13/2014.
  */

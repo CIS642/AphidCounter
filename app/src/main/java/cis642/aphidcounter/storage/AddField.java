@@ -2,46 +2,47 @@ package cis642.aphidcounter.storage;
 
 import android.app.Activity;
 import android.content.ContentValues;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-
 import cis642.aphidcounter.R;
-import cis642.aphidcounter.entity.Field;
 
 /**
  * Created by JacobLPruitt on 10/26/2014.
  */
-public class AddField extends Activity implements Serializable {
-    public String name;
+public class AddField extends Activity implements View.OnClickListener{
+    public String fieldName;
     public String cropType;
 
     private DatabaseOpenHelper mDbHelper;
     private SimpleCursorAdapter mAdapter;
 
-    private ArrayList<Field> listOfFields;
+    Button addFieldButton;
+    EditText textBox_FieldName;
+    Spinner spinner_FieldCrop;
+
+
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_field_layout);
 
         mDbHelper = new DatabaseOpenHelper(this);
-        //Intent myIntent = getIntent();
-        //listOfFields = (ArrayList<Field>) myIntent.getSerializableExtra("fields");
-        Button addFieldButton = (Button) findViewById(R.id.createFieldButton);
-        addFieldButton.setOnClickListener(new OnClickListener() {
+
+        addFieldButton = (Button) findViewById(R.id.createFieldButton);
+        addFieldButton.setOnClickListener(this);
+
+        textBox_FieldName = (EditText) findViewById(R.id.fieldNameTextBox);
+        spinner_FieldCrop = (Spinner) findViewById(R.id.addFieldCropSpinner);
+
+        /*addFieldButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
-                EditText addFieldText = (EditText) findViewById(R.id.fieldNameTextBox);
-                name = addFieldText.getText().toString();
-                Spinner addFieldSpinner = (Spinner) findViewById(R.id.addFieldCropSpinner);
-                cropType = addFieldSpinner.getSelectedItem().toString();
+
                 ContentValues values = new ContentValues();
 
                 values.put(DatabaseOpenHelper.FIELD_NAME,name);
@@ -61,9 +62,22 @@ public class AddField extends Activity implements Serializable {
                 //intent.putExtra("newFields", listOfFields);
                 //startActivityForResult(intent, 0);
             }
-        });
+        });*/
     }
 
 
 
+
+    public void onClick(View v){
+        if(v.getId() == R.id.createFieldButton){
+            fieldName = textBox_FieldName.getText().toString();
+            cropType = spinner_FieldCrop.getSelectedItem().toString();
+            ContentValues values = new ContentValues();
+            values.put(DatabaseOpenHelper.FIELD_NAME,fieldName);
+            values.put(DatabaseOpenHelper.FIELD_CROP,cropType);
+            mDbHelper.getWritableDatabase().insert(DatabaseOpenHelper.TABLE_NAME, null, values);
+            values.clear();
+            finish();
+        }
+    }
 }

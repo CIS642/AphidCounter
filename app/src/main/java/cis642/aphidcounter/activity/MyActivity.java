@@ -1,4 +1,4 @@
-package cis642.aphidcounter;
+package cis642.aphidcounter.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -13,6 +13,7 @@ import android.widget.Button;
 import java.util.ArrayList;
 
 
+import cis642.aphidcounter.R;
 import cis642.aphidcounter.entity.Field;
 import cis642.aphidcounter.storage.AddField;
 import cis642.aphidcounter.storage.SelectField;
