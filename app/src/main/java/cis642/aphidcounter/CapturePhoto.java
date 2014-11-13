@@ -51,7 +51,7 @@ public class CapturePhoto extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.take_photos);
 
-        photoImage = (ImageView) findViewById(R.id.photo_image);
+        /*photoImage = (ImageView) findViewById(R.id.photo_image);
 
          Button callCameraButton = (Button)
                 findViewById(R.id.button_callcamera);
@@ -63,7 +63,7 @@ public class CapturePhoto extends Activity {
                 i.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
                 startActivityForResult(i, CAPTURE_IMAGE_ACTIVITY_REQ );
             }
-        });
+        });*/
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

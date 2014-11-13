@@ -1,6 +1,7 @@
-package cis642.aphidcounter;
+package cis642.aphidcounter.activity;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.Menu;
@@ -11,23 +12,29 @@ import android.content.Intent;
 import android.view.View.OnClickListener;
 import android.app.Activity;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.content.ContentValues;
+
+import cis642.aphidcounter.R;
 
 /**
  * Created by JacobLPruitt on 9/29/2014.
  */
 public class TakePhotos extends Activity{
-
+    ImageView iv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.take_photos);
+        iv = (ImageView) findViewById(R.id.photo_image_view);
         Button next = (Button) findViewById(R.id.accessCameraButton);
-        next.setOnClickListener(new View.OnClickListener() {
+        next.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
-                Intent myIntent = new Intent(view.getContext(), CapturePhoto.class);
-                startActivityForResult(myIntent, 0);
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent, 0);
+                //Intent myIntent = new Intent(view.getContext(), CapturePhoto.class);
+                //startActivityForResult(myIntent, 0);
                 /*String fileName = "new-photo-name.jpg";
                 //create parameters for Intent with filename
                 ContentValues values = new ContentValues();
@@ -45,6 +52,18 @@ public class TakePhotos extends Activity{
             }
 
         });
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if(requestCode == 0)
+        {
+            Bitmap theImage = (Bitmap) data.getExtras().get("data");
+            iv.setImageBitmap(theImage);
+
+        }
 
     }
 
