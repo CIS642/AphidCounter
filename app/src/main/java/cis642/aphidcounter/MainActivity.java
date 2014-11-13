@@ -16,8 +16,10 @@ import android.widget.ImageView;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
+import org.opencv.highgui.Highgui;
+import org.opencv.imgproc.*;
 
-import cis642.aphidcounter.activity.TakePhotos;
+import static cis642.aphidcounter.R.drawable.ic_launcher;
 
 //THIS"LL B FOR TESTNG PURPOSES
 public class MainActivity extends ActionBarActivity implements View.OnClickListener {
@@ -86,7 +88,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         try {
             // Load the image resource as a Mat:
-            source = Utils.loadResource(MainActivity.this, R.drawable.test_img2);
+            source = Utils.loadResource(MainActivity.this, R.drawable.test_img2_small);
 
             imageConverter.setSource(source);                       // Set the source Mat
             imageConverter.ConvertImage();                          // Convert the image Mat

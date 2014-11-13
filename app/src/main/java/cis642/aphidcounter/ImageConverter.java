@@ -106,32 +106,32 @@ public class ImageConverter {
 
 
 
-        //Imgproc.medianBlur(convertedImage, convertedImage, 3);
+        Imgproc.medianBlur(convertedImage, convertedImage, 3);
         //something
         //Log.i("Displaying Mat", convertedImage.);
         //ty to blur out the fine details fo creating the bg.
         //this will make a better mask for removing the bg
-       // Mat bg = new Mat();
-        //Imgproc.threshold(convertedImage,bg,90,110,Imgproc.THRESH_BINARY);
-        //Core.absdiff(convertedImage,bg,convertedImage);
+       Mat bg = new Mat();
+        Imgproc.threshold(convertedImage,bg,90,110,Imgproc.THRESH_BINARY);
+        Core.absdiff(convertedImage,bg,convertedImage);
 
         //Removing Background and Noise
 
 
 
         //Initial Contrast enhancement
-        //Imgproc.equalizeHist(convertedImage,convertedImage);
+        Imgproc.equalizeHist(convertedImage,convertedImage);
 
         //mockProcess: assuming bg and noise are removed
-        //Mat octagon = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_CROSS, new Size(210,210));
-        //Imgproc.dilate(convertedImage,convertedImage,octagon);
-        //Imgproc.floodFill(convertedImage,convertedImage,new Point(0,0),new Scalar(255,255,255));
-        //Imgproc.medianBlur(convertedImage,convertedImage,7);
-        //Imgproc.equalizeHist(convertedImage,convertedImage);
-        //Imgproc.floodFill(convertedImage,convertedImage,new Point(0,0),new Scalar(255,255,255));
+        Mat octagon = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_CROSS, new Size(210,210));
+        Imgproc.dilate(convertedImage,convertedImage,octagon);
+        Imgproc.floodFill(convertedImage,convertedImage,new Point(0,0),new Scalar(255,255,255));
+        Imgproc.medianBlur(convertedImage,convertedImage,7);
+        Imgproc.equalizeHist(convertedImage,convertedImage);
+        Imgproc.floodFill(convertedImage,convertedImage,new Point(0,0),new Scalar(255,255,255));
 
 
-        //Imgproc.equalizeHist(convertedImage,convertedImage);
+        Imgproc.equalizeHist(convertedImage,convertedImage);
 
     }
 

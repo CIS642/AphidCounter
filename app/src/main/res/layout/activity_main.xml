@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:src="@drawable/test_img3"
+            android:src="@drawable/test_img2"
             android:contentDescription=""
             android:layout_above="@+id/examine_photo"
             android:layout_below="@+id/testing_button" />
