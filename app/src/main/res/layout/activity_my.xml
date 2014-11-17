@@ -1,54 +1,68 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/main_bg"
+    tools:context=".MyActivity">>
+
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MyActivity">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context=".MyActivity"
     android:orientation="vertical"
     android:clickable="false">
 
     <Button
-        android:layout_width="200dp"
-        android:layout_height="40dp"
-        android:text="Add New Field"
-        android:id="@+id/addFieldButton"
+        style="@style/ButtonsStyle"
+        android:id="@+id/takePhotos"
+        android:text="Take Photo(s)"
         android:clickable="true"
-        android:enabled="true"
-        android:background="#fff4fffd"
-        android:textColor="#fe000000" />
-
-    <Button
-        android:layout_width="200dp"
-        android:layout_height="40dp"
-        android:text="Select Working Field"
-        android:id="@+id/selectField"
-        android:clickable="true"
-        android:enabled="true"
-        android:background="#fff4fffd"
-        android:textColor="#fe000000" />
-
-    <Button
-        android:id="@+id/btnViewHistory"
-        android:text="View History"
-        android:layout_width="200dp"
-        android:layout_height="40dp"
-        android:clickable="true"
-        android:background="#fff4fffd"
-        android:textColor="#fe000000"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
         />
 
     <Button
-        android:id="@+id/btnConversionTest"
-        android:text="Conversion Test"
-        android:layout_width="200dp"
-        android:layout_height="40dp"
+        style="@style/ButtonsStyle"
+        android:id="@+id/addFieldButton"
+        android:text="Add New Field"
         android:clickable="true"
-        android:background="#fff4fffd"
-        android:textColor="#fe000000"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        />
+
+    <Button
+        style="@style/ButtonsStyle"
+        android:id="@+id/selectField"
+        android:text="Select Working Field"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        />
+
+    <Button
+        style="@style/ButtonsStyle"
+        android:id="@+id/btnViewHistory"
+        android:text="View History"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        />
+
+    <Button
+        style="@style/ButtonsStyle"
+        android:id="@+id/btnConversionTest"
+        android:text="Convert Photos"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
         />
 
 
@@ -103,3 +117,7 @@
         android:enabled="true" /> -->
 
 </LinearLayout>
+
+</ScrollView>
+
+</RelativeLayout>

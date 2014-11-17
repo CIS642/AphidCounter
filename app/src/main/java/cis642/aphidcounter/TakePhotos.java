@@ -1,36 +1,136 @@
 package cis642.aphidcounter;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import java.io.File;
 import java.lang.Object;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 import android.view.View;
 import android.content.Intent;
 import android.view.View.OnClickListener;
 import android.app.Activity;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.content.ContentValues;
+import android.widget.TextView;
+
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+
+import cis642.aphidcounter.entity.Field;
+import cis642.aphidcounter.manager.FileManager;
+import cis642.aphidcounter.manager.PhotoSetManager;
 
 /**
  * Created by JacobLPruitt on 9/29/2014.
  */
-public class TakePhotos extends Activity{
-    ImageView iv;
+public class TakePhotos extends Activity
+{
+
+    /**
+     * The alert that will display when the user clicks the Finish button.
+     */
+    private AlertDialog confirmFinish;
+
+    /**
+     * Original filename of the saved photo that will be renamed.
+     */
+    private final String photoName = "MYPHOTO.JPG";
+
+    /**
+     * For managing files and directories.
+     */
+    private FileManager fileManager = new FileManager();
+
+    //private File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+    //       + File.separator + "AphidCounter" + File.separator + "Photos");
+
+    /**
+     * Flag that prevents the photoset from being added to the photoset manager more than once.
+     */
+    private boolean hasAddedPhotoSet = false;
+
+    /**
+     * The current photo count for this set.
+     */
+    private int photoCount = 0;
+
+    /**
+     * The photoset that will be added.
+     */
+    private final PhotoSet photoSet = new PhotoSet("", null, null);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.take_photos);
-        iv = (ImageView) findViewById(R.id.photo_image_view);
+
+        // Initialize the folders to save the photos to.
+        //TryInitializeDirectory();
+
+        //iv = (ImageView) findViewById(R.id.photo_image_view);
+
+        //Create the photoset for this particular activity:
+        //final PhotoSet photoSet = new PhotoSet("", null, null);
+        photoSet.SetDateTaken(new GregorianCalendar());
+
+        // Set the even handlers:
+        SetBugTypeListener(photoSet);
+
+        SetFieldTypeListener(photoSet);
+
+        SetTakePhotoListener(photoSet);
+
+        CreateFinishAlertDialog();
+
+        SetFinishListener();
+
+/* i added
+        // Set the Listener handler for the bug type spinner.
+        Spinner selectBug = (Spinner) findViewById(R.id.bugTypeSpinner);
+        selectBug.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+                // Get the bug that the user selected.
+                String bugType = adapterView.getItemAtPosition(i).toString();
+
+                // Set that as the bug for this photo set.
+                photoSet.SetBugType(bugType);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) { }
+        });
+
+        // Set the event handler for the Take Photo button click.
         Button next = (Button) findViewById(R.id.accessCameraButton);
         next.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
+
+                photoSet.SetBugType("");
+                photoSet.SetField(new Field());
+
+
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(intent, 0);
+
+i added*/
+
                 //Intent myIntent = new Intent(view.getContext(), CapturePhoto.class);
                 //startActivityForResult(myIntent, 0);
                 /*String fileName = "new-photo-name.jpg";
@@ -46,22 +146,47 @@ public class TakePhotos extends Activity{
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                 intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
                 startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);*/
-
+/* i added
             }
 
         });
-
+i added*/
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        if(requestCode == 0)
+        // on photo capture, result code = -1. on back button press, result code = 0
+        if(requestCode == 0 && resultCode == -1)
         {
-            Bitmap theImage = (Bitmap) data.getExtras().get("data");
-            iv.setImageBitmap(theImage);
+            //Bitmap theImage = (Bitmap) data.getExtras().get("data");
+            //iv.setImageBitmap(theImage);
 
+            // Rename the photo filename to something unique.
+            String photoName = RenamePhoto();
+
+            // If the photo was renamed successfully, add the file name to the photo set.
+            if (!photoName.equals(""))
+            {
+                photoSet.AddPhoto(photoName);
+                photoCount++;
+            }
+
+            // Only add the photoset if it has not been added yet.
+            if (!hasAddedPhotoSet)
+            {
+                PhotoSetManager.Add(photoSet);
+                hasAddedPhotoSet = true;
+            }
+
+            PhotoSetManager.Save();
+
+            UpdateView();
         }
+
+
+
+        //PhotoSetManager.SerializeList();
 
     }
 
@@ -85,5 +210,189 @@ public class TakePhotos extends Activity{
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Set the event handler for when the user selects a type of bug.
+     * @param photoSet
+     */
+    private void SetBugTypeListener(final PhotoSet photoSet)
+    {
+        Spinner selectBug = (Spinner) findViewById(R.id.bugTypeSpinner);
+
+        selectBug.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+                // Get the bug that the user selected.
+                String bugType = adapterView.getSelectedItem().toString();
+
+                // Set that as the bug for this photo set.
+                photoSet.SetBugType(bugType);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) { }
+        });
+
+    }
+
+    /**
+     * Set the event handler for when the user selects a field.
+     * @param photoSet
+     */
+    private void SetFieldTypeListener(final PhotoSet photoSet)
+    {
+        Spinner selectField = (Spinner) findViewById(R.id.fieldTypeSpinner);
+        selectField.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+                // Get the field that the user selected.
+                String fieldName = adapterView.getSelectedItem().toString();
+
+                Field field = new Field(fieldName, "Soy Bean");
+
+                // Set that as the bug for this photo set.
+                photoSet.SetField(field);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) { }
+        });
+    }
+
+    /**
+     * Set the event handler for when the user clicks the Take Photo button.
+     * @param photoSet
+     */
+    private void SetTakePhotoListener(final PhotoSet photoSet)
+    {
+        Button next = (Button) findViewById(R.id.accessCameraButton);
+        next.setOnClickListener(new OnClickListener() {
+            public void onClick(View view) {
+
+                //File filename = new File(directory + File.separator + "MYPHOTO.jpg");
+                File photoFile = new File(fileManager.GetPhotosDirectory() + File.separator + photoName);
+
+                // Start the activity to take a photo.
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                //if (directory.exists())
+                if (fileManager.GetPhotosDirectory().exists())
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+
+                startActivityForResult(intent, 0);
+            }
+        });
+    }
+
+    /**
+     * Set the handler for the Finish button. Displays a confirmation dialog upon click.
+     */
+    private void SetFinishListener()
+    {
+        Button finishButton = (Button) findViewById(R.id.finishPhotoSet);
+        finishButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                confirmFinish.show();
+            }
+        });
+    }
+
+    /**
+     * Attempts to initialize the folder(s) where the photos will be stored in.
+     */
+/*    private void TryInitializeDirectory()
+    {
+        if (!directory.exists())
+        {
+            try
+            {
+                directory.mkdirs();
+            } catch (Exception ex) { ex.printStackTrace(); }
+        }
+
+    } */
+
+    /**
+     * Renames the .jpg file containing the newly captured photo.
+     */
+    private String RenamePhoto()
+    {
+        String updatedPhotoName = Long.toString(System.currentTimeMillis()) + ".jpg";
+        File from, to;
+        boolean success = false;
+        // photoname = photoname.replace(" ", "");
+
+        try
+        {
+            //File from = new File(directory + File.separator + "MYPHOTO.jpg");
+            //File updatedName = new File(directory + File.separator + photoname);
+
+            from = new File(fileManager.GetPhotosDirectory() + File.separator + photoName);
+            to = new File(fileManager.GetPhotosDirectory() + File.separator + updatedPhotoName);
+
+            from.renameTo(to);
+
+            if (to.exists())
+                success = true;
+
+        } catch (Exception ex) { ex.printStackTrace(); }
+
+        if (success)
+            return updatedPhotoName;
+        else
+            return "";
+    }
+
+    /**
+     * Updates the view after the first photo has been taken.
+     * It updates the text for the Take photo button, as well as updates the text for the
+     * photo count textview. Also displays the "Finish" button after the first photo is taken.
+     */
+    private void UpdateView()
+    {
+        TextView numOfPhotos = (TextView) findViewById(R.id.photoCountText);
+
+        if (photoCount == 1) {
+            Button takePhotoButton = (Button) findViewById(R.id.accessCameraButton);
+            Button finishButton = (Button) findViewById(R.id.finishPhotoSet);
+
+            takePhotoButton.setText("Take Another Photo");
+            finishButton.setVisibility(View.VISIBLE);
+            finishButton.setEnabled(true);
+
+            numOfPhotos.setVisibility(View.VISIBLE);
+        }
+
+        numOfPhotos.setText("Current Photo Count: " + photoCount);
+    }
+
+    /**
+     * Creates the alert dialog, which will be displayed when the user clicks the Finish button.
+     * This will allow them to confirm if they want to finish taking photos for this set.
+     */
+    private void CreateFinishAlertDialog()
+    {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setMessage("Finish taking photos?");
+        alertBuilder.setCancelable(true);
+        alertBuilder.setPositiveButton("Yes",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        finish();
+                    }
+                });
+        alertBuilder.setNegativeButton("No",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        confirmFinish = alertBuilder.create();
+    }
 
 }

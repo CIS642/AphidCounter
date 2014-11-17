@@ -57,7 +57,7 @@ public class SelectField extends ListActivity {
 
         //listOfFields = (ArrayList<Field>) myIntent.getSerializableExtra("newFields");
         ArrayAdapter<Field> adapter = new ArrayAdapter<Field>(this, android.R.layout.simple_list_item_1, listOfFields);
-        ListView lv = (ListView) findViewById(R.id.selectFieldListView);
+        ListView lv = (ListView) findViewById(android.R.id.list);
         lv.setAdapter(adapter);
         ArrayList<Field> listClone = listOfFields;
         saveFields(listClone);
@@ -98,7 +98,7 @@ public class SelectField extends ListActivity {
         listOfFields = new ArrayList<Field>();
         Cursor c = getAllFields();
 
-        mAdapter = new SimpleCursorAdapter(this,R.layout.select_field_layout,c,DatabaseOpenHelper.columns,new int []{R.id.selectFieldListView});
+        mAdapter = new SimpleCursorAdapter(this,R.layout.select_field_layout,c,DatabaseOpenHelper.columns,new int []{android.R.id.list});
         /*try {
 
             //FileInputStream fis = this.openFileInput("MyFields.txt");

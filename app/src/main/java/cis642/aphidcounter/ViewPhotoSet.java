@@ -11,42 +11,47 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import cis642.aphidcounter.manager.PhotoSetManager;
+
 
 /**
  * This class creates the UI for viewing a particular photo set.
  */
 public class ViewPhotoSet extends ActionBarActivity {
 
+    private String photoSetIndex;
     private PhotoSet photoSet;
-    private ArrayList<TextView> textView = new ArrayList<TextView>();
+    //private ArrayList<TextView> textView = new ArrayList<TextView>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_view_photo_set);
 
         // Get the photoset that was passed to this intent:
-        photoSet = (PhotoSet) getIntent().getSerializableExtra("PhotoSet");
+        photoSetIndex = (String) getIntent().getSerializableExtra("PhotoSet");
+        photoSet = PhotoSetManager.GetInstance().Get(Integer.parseInt(photoSetIndex));
 
         // Make the screen scrollable (have a scroll bar)
-        ScrollView scrollView = new ScrollView(this);
+        //ScrollView scrollView = new ScrollView(this);
 
-        RelativeLayout relativeLayout = new RelativeLayout(this);
+        //RelativeLayout relativeLayout = new RelativeLayout(this);
 
         // Set the layout parameters.
-        RelativeLayout.LayoutParams relativeLayoutParams =
-                new RelativeLayout.LayoutParams(
-                        RelativeLayout.LayoutParams.FILL_PARENT,
-                        RelativeLayout.LayoutParams.FILL_PARENT);
+        //RelativeLayout.LayoutParams relativeLayoutParams =
+        //        new RelativeLayout.LayoutParams(
+        //                RelativeLayout.LayoutParams.FILL_PARENT,
+        //                RelativeLayout.LayoutParams.FILL_PARENT);
 
         // Create the UI for this page.
         CreateTextViews();
 
         // Go through each text view and add it to the layout.
-        for (int i = 0; i < textView.size(); i ++)
-            relativeLayout.addView(textView.get(i));
+        //for (int i = 0; i < textView.size(); i ++)
+        //    relativeLayout.addView(textView.get(i));
 
-        scrollView.addView(relativeLayout);
-        setContentView(scrollView, relativeLayoutParams);
+        //scrollView.addView(relativeLayout);
+        //setContentView(scrollView, relativeLayoutParams);
     }
 
 
@@ -76,32 +81,59 @@ public class ViewPhotoSet extends ActionBarActivity {
     private void CreateTextViews() {
 
         // Create a button for the ith index in the photoSets list.
-        TextView textView1 = new TextView(this);
+
+
+        TextView bugType = (TextView) findViewById(R.id.bugTypeText);
+        TextView fieldName = (TextView) findViewById(R.id.fieldText);
+        TextView cropType = (TextView) findViewById(R.id.cropType);
+        TextView dateTaken = (TextView) findViewById(R.id.dateTakenText);
+        TextView photoCount = (TextView) findViewById(R.id.numberOfPhotosText);
+        TextView avgBugCount = (TextView) findViewById(R.id.avgBugCountText);
+
+        bugType.setText("Bug Type:   " + photoSet.GetBugType());
+        fieldName.setText("Field:   " + photoSet.GetField().name());
+        cropType.setText("Crop Type:   " + photoSet.GetField().GetCropType());
+        dateTaken.setText("Date Taken:   " + photoSet.GetDateTaken());
+        photoCount.setText("Photo Count:   " + photoSet.GetPhotoCount());
+        avgBugCount.setText("Average Bug Count:   "); // TODO
+
+
+        /*TextView textView1 = new TextView(this);
 
         textView1.setText("Field: " + photoSet.GetField().name());
+        textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         SetTextLayout(textView1, RelativeLayout.ALIGN_PARENT_LEFT, 20, 0, 20, 5);
         textView.add(textView1);
 
         textView1 = new TextView(this);
+        textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         textView1.setText("Crop Type: " + photoSet.GetField().GetCropType());
-        SetTextLayout(textView1, RelativeLayout.ALIGN_PARENT_LEFT, 20, 20, 20, 5);
-        textView.add(textView1);
-
-        textView1 = new TextView(this);
-        textView1.setText("Bug Type: " + photoSet.GetBugType());
         SetTextLayout(textView1, RelativeLayout.ALIGN_PARENT_LEFT, 20, 40, 20, 5);
         textView.add(textView1);
 
         textView1 = new TextView(this);
-        textView1.setText("Date: " + photoSet.GetDateTaken());
-        SetTextLayout(textView1, RelativeLayout.ALIGN_PARENT_LEFT, 20, 60, 20, 5);
+        textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        textView1.setText("Bug Type: " + photoSet.GetBugType());
+        SetTextLayout(textView1, RelativeLayout.ALIGN_PARENT_LEFT, 20, 80, 20, 5);
         textView.add(textView1);
 
         textView1 = new TextView(this);
-        textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-        textView1.setText("Avg Bug Count per Leaf: ");
-        SetTextLayout(textView1, RelativeLayout.ALIGN_PARENT_LEFT, 20, 80, 20, 5);
+        textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        textView1.setText("Date: " + photoSet.GetDateTaken());
+        SetTextLayout(textView1, RelativeLayout.ALIGN_PARENT_LEFT, 20, 120, 20, 5);
         textView.add(textView1);
+
+        textView1 = new TextView(this);
+        textView1.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+        textView1.setText("# Of Photos in this Set: " + photoSet.GetPhotoCount());
+        SetTextLayout(textView1, RelativeLayout.ALIGN_PARENT_LEFT, 20, 160, 20, 5);
+        textView.add(textView1);
+
+        textView1 = new TextView(this);
+        textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        textView1.setText("Avg Bug Count per Leaf: ");
+        SetTextLayout(textView1, RelativeLayout.ALIGN_PARENT_LEFT, 20, 200, 20, 5);
+        textView.add(textView1);*/
     }
 
     /**

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:weightSum="1">
 
@@ -22,6 +24,7 @@
         android:entries="@array/bugTypes"
         android:prompt="@string/bug_prompt" />
 
+    <!--
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -39,14 +42,58 @@
         android:entries="@array/cropTypes"
         android:prompt="@string/crop_prompt"
         android:clickable="true" />
+    -->
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Please Select the field"
+        android:id="@+id/textView2"
+        android:layout_gravity="center_horizontal" />
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/fieldTypeSpinner"
+        android:layout_gravity="center_horizontal"
+        android:spinnerMode="dropdown"
+        android:entries="@array/allFields"
+        android:prompt="@string/field_prompt"
+        android:clickable="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="Take Photo"
+        android:textSize="24dp"
         android:id="@+id/accessCameraButton"
         android:layout_gravity="center_horizontal"
         android:clickable="true"
         android:enabled="true" />
 
+    <TextView
+        android:id="@+id/photoCountText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Current Photo Count: 0"
+        android:layout_gravity="center_horizontal"
+        android:textSize="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="20dp"
+        android:visibility="invisible"/>
+
+    <Button
+        android:id="@+id/finishPhotoSet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="40dp"
+        android:text="Done"
+        android:textSize="24dp"
+        android:clickable="false"
+        android:visibility="invisible"/>
+
 </LinearLayout>
+
