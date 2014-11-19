@@ -8,11 +8,11 @@ import android.database.sqlite.SQLiteOpenHelper;
  * Created by japshvincent on 11/6/2014.
  */
 public class DatabaseOpenHelper extends SQLiteOpenHelper{
-    final static String TABLE_NAME = "ac_fields";
-    final static String FIELD_NAME = "field_name";
-    final static String FIELD_CROP = "field_crop";
-    final static String _ID = "_id";
-    final static String[] columns = { _ID,FIELD_NAME, FIELD_CROP };
+    public final static String TABLE_NAME = "ac_fields";
+    public final static String FIELD_NAME = "field_name";
+    public final static String FIELD_CROP = "field_crop";
+    public final static String _ID = "_id";
+    public final static String[] columns = { _ID,FIELD_NAME, FIELD_CROP };
 
     final private static String CREATE_CMD =
             "CREATE TABLE ac_fields (" + _ID

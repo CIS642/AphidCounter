@@ -2,10 +2,10 @@
 <merger version="2" >
 
     <dataSet config="main" >
-        <source path="C:\Users\Staton\AndroidStudioProjects\Git\AphidCounter\libraries\opencv\src\main\assets" />
+        <source path="H:\workspace\git\Sprint5\AphidCounter\libraries\opencv\src\main\assets" />
     </dataSet>
     <dataSet config="release" >
-        <source path="C:\Users\Staton\AndroidStudioProjects\Git\AphidCounter\libraries\opencv\src\release\assets" />
+        <source path="H:\workspace\git\Sprint5\AphidCounter\libraries\opencv\src\release\assets" />
     </dataSet>
 
 </merger>

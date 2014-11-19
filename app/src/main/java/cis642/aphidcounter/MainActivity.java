@@ -19,6 +19,8 @@ import org.opencv.core.Mat;
 import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.*;
 
+import cis642.aphidcounter.activity.TakePhotos;
+
 import static cis642.aphidcounter.R.drawable.ic_launcher;
 
 //THIS"LL B FOR TESTNG PURPOSES
@@ -96,8 +98,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
             // Create a bitmap to store the converted image:
             Bitmap bmConvertedImage = Bitmap.createBitmap(convertedImage.cols(),
-                                                          convertedImage.rows(),
-                                                          Bitmap.Config.ARGB_8888);
+                    convertedImage.rows(),
+                    Bitmap.Config.ARGB_8888);
 
             Utils.matToBitmap(convertedImage, bmConvertedImage);    // Convert the Mat to bitmap
 
@@ -110,7 +112,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         } catch(Exception e){
             e.printStackTrace();
         }
-
     }
 
 }

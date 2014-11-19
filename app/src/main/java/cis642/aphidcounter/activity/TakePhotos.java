@@ -1,38 +1,36 @@
-package cis642.aphidcounter;
+package cis642.aphidcounter.activity;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.graphics.Bitmap;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import java.io.File;
-import java.lang.Object;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 import android.view.View;
 import android.content.Intent;
 import android.view.View.OnClickListener;
-import android.app.Activity;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
-import android.content.ContentValues;
 import android.widget.TextView;
 
-import org.opencv.android.Utils;
-import org.opencv.core.Mat;
-
+import cis642.aphidcounter.PhotoSet;
 import cis642.aphidcounter.entity.Field;
 import cis642.aphidcounter.manager.FileManager;
 import cis642.aphidcounter.manager.PhotoSetManager;
+
+import cis642.aphidcounter.R;
+import cis642.aphidcounter.storage.DatabaseOpenHelper;
 
 /**
  * Created by JacobLPruitt on 9/29/2014.
@@ -73,10 +71,32 @@ public class TakePhotos extends Activity
      */
     private final PhotoSet photoSet = new PhotoSet("", null, null);
 
+
+    private DatabaseOpenHelper mDbHelper;
+    private SimpleCursorAdapter mAdapter;
+
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.take_photos);
+
+        mDbHelper = new DatabaseOpenHelper(this);
+
+        Intent myIntent = getIntent();
+
+        Cursor c = getAllFields();
+        mAdapter = new SimpleCursorAdapter(this, R.layout.spinner_view_dropdown, c, DatabaseOpenHelper.columns, new int[] {R.id._id, R.id.fieldName,R.id.cropName},0);
+
+        startManagingCursor(c);
+
+        String [] columns = new String [] {"field_name"};
+        int [] to = new int[]{R.id._id};
+
+        mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        Spinner spnClients = (Spinner) findViewById(R.id.fieldTypeSpinner);
+        spnClients.setAdapter(mAdapter);
 
         // Initialize the folders to save the photos to.
         //TryInitializeDirectory();
@@ -88,6 +108,8 @@ public class TakePhotos extends Activity
         photoSet.SetDateTaken(new GregorianCalendar());
 
         // Set the even handlers:
+
+
         SetBugTypeListener(photoSet);
 
         SetFieldTypeListener(photoSet);
@@ -151,6 +173,9 @@ i added*/
 
         });
 i added*/
+    }
+    private Cursor getAllFields(){
+        return mDbHelper.getWritableDatabase().query(DatabaseOpenHelper.TABLE_NAME,DatabaseOpenHelper.columns,null,new String[] {},null,null,null);
     }
 
     @Override

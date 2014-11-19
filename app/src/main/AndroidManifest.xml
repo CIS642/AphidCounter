@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MyActivity"
+            android:name=".activity.MyActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,12 +22,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".TakePhotos" />
+        <activity android:name=".activity.TakePhotos" />
         <activity android:name=".CapturePhoto" />
         <activity
             android:name=".ViewHistory"
             android:label="@string/title_activity_view_history"
-            android:parentActivityName=".MyActivity" >
+            android:parentActivityName=".activity.MyActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cis642.aphidcounter.MyActivity" />
@@ -51,7 +51,7 @@
         <activity
             android:name=".storage.AddField"
             android:label="@string/addField_label"
-            android:parentActivityName=".MyActivity" >
+            android:parentActivityName=".activity.MyActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cis642.aphidcounter.MyActivity" />
@@ -59,7 +59,7 @@
         <activity
             android:name=".storage.SelectField"
             android:label="@string/selectField_label"
-            android:parentActivityName=".storage.AddField" >
+            android:parentActivityName=".activity.MyActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cis642.aphidcounter.AddField" />

@@ -58,7 +58,6 @@
         android:id="@+id/fieldTypeSpinner"
         android:layout_gravity="center_horizontal"
         android:spinnerMode="dropdown"
-        android:entries="@array/allFields"
         android:prompt="@string/field_prompt"
         android:clickable="true" />
 
