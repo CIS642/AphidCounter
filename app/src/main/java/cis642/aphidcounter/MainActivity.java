@@ -81,7 +81,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        /*Log.i("PROCESS TRACE", "Doing image processing");
+        Log.i("PROCESS TRACE", "Doing image processing");
 
         Mat source = new Mat();
         Mat convertedImage = new Mat();
@@ -104,14 +104,14 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             Utils.matToBitmap(convertedImage, bmConvertedImage);    // Convert the Mat to bitmap
 
             // Get the imageview of the pic shown on the app screen:
-            ImageView ivAphidPic = (ImageView) findViewById(R.id.for_testing_image);
+            ImageView ivAphidPic = (ImageView) findViewById(R.id.aphid_image);
 
             // Update the image shown on the app screen to the newly converted image:
             ivAphidPic.setImageBitmap(bmConvertedImage);
 
         } catch(Exception e){
             e.printStackTrace();
-        }*/
+        }
     }
 
 }
