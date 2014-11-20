@@ -81,7 +81,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        Log.i("PROCESS TRACE", "Doing image processing");
+        /*Log.i("PROCESS TRACE", "Doing image processing");
 
         Mat source = new Mat();
         Mat convertedImage = new Mat();
@@ -111,7 +111,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         } catch(Exception e){
             e.printStackTrace();
-        }
+        }*/
     }
 
 }
