@@ -1,8 +1,12 @@
 package cis642.aphidcounter;
 
+import android.annotation.TargetApi;
+import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Activity;
 
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Button;
 import android.view.View;
@@ -13,12 +17,19 @@ import java.io.File;
 import android.os.Environment;
 import android.util.Log;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Date;
+
+import android.widget.SimpleCursorAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
+import cis642.aphidcounter.storage.DatabaseOpenHelper;
 
 public class CapturePhoto extends Activity {
 
@@ -46,24 +57,12 @@ public class CapturePhoto extends Activity {
                 + timeStamp + ".jpg");
     }
 
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.take_photos);
-
-        /*photoImage = (ImageView) findViewById(R.id.photo_image);
-
-         Button callCameraButton = (Button)
-                findViewById(R.id.button_callcamera);
-
-        callCameraButton.setOnClickListener( new View.OnClickListener() {
-            public void onClick(View view) {
-                Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                fileUri = Uri.fromFile(getOutputPhotoFile());
-                i.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-                startActivityForResult(i, CAPTURE_IMAGE_ACTIVITY_REQ );
-            }
-        });*/
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

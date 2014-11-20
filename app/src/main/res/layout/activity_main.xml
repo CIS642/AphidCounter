@@ -25,16 +25,15 @@
     </LinearLayout>
 
         <!-- Test image -->
-        <ImageView
-            android:id="@+id/for_testing_image"
+        <!--ImageView
+            android:id="@+id/aphid_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:src="@drawable/test_img2"
             android:contentDescription=""
             android:layout_above="@+id/examine_photo"
-            android:layout_below="@+id/testing_button" />
-
+            android:layout_below="@+id/testing_button" /-->
     <Button
         android:id="@+id/testing_button"
         android:layout_width="wrap_content"
@@ -62,5 +61,14 @@
         android:enabled="true"
         android:padding="10dp"
         android:textStyle="bold" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/aphid_image"
+        android:src="@drawable/test_img2_small"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

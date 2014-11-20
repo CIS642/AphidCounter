@@ -4,6 +4,9 @@
 
     <uses-sdk android:minSdkVersion="8" />
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:debuggable="true"
@@ -19,8 +22,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.TakePhotos" />
-        <activity android:name=".CapturePhoto" />
+        <activity android:name=".activity.TakePhotos"
+            android:label="@string/title_activity_take_photo"
+            android:parentActivityName=".activity.MyActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="cis642.aphidcounter.MyActivity" />
+        </activity>
+        <activity android:name=".CapturePhoto"
+            android:label="@string/title_activity_capture_photo"
+            android:parentActivityName=".activity.MyActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="cis642.aphidcounter.MyActivity" />
+        </activity>
         <activity
             android:name=".ViewHistory"
             android:label="@string/title_activity_view_history"
@@ -56,26 +71,10 @@
         <activity
             android:name=".MainActivity"
             android:label="Conversion Test"
-            android:parentActivityName=".MyActivity" >
+            android:parentActivityName=".activity.MyActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cis642.aphidcounter.MyActivity" />
-        </activity>
-        <activity
-            android:name=".storage.AddField"
-            android:label="@string/addField_label"
-            android:parentActivityName=".MyActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="cis642.aphidcounter.MyActivity" />
-        </activity>
-        <activity
-            android:name=".storage.SelectField"
-            android:label="@string/selectField_label"
-            android:parentActivityName=".storage.AddField" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="cis642.aphidcounter.AddField" />
         </activity>
     </application>
 

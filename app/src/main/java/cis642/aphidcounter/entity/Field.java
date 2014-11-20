@@ -33,6 +33,15 @@ public class Field implements Serializable {
         return name;
     }
 
+    /**
+     * Gets the crop type for this field.
+     * @return A string of the type of crop.
+     */
+    public String GetCropType()
+    {
+        return this.cropType;
+    }
+
     @Override
     public String toString() {
         return name;

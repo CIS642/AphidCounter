@@ -1,8 +1,11 @@
 package cis642.aphidcounter;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,10 +13,18 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
 import cis642.aphidcounter.entity.Field;
+import cis642.aphidcounter.manager.PhotoSetManager;
 
 /**
  * This class creates the UI for viewing all of the photo sets that have been previously taken.
@@ -23,7 +34,8 @@ public class ViewHistory extends ActionBarActivity {
     /**
      * A list of photosets.
      */
-    private ArrayList<PhotoSet> photoSets = new ArrayList<PhotoSet>();
+    //private ArrayList<PhotoSet> photoSets = new ArrayList<PhotoSet>();
+    private static PhotoSetManager psManager = PhotoSetManager.GetInstance();
 
     /**
      * A list of buttons that will be clicked to view each photo set in detail.
@@ -47,9 +59,12 @@ public class ViewHistory extends ActionBarActivity {
 
         scrollView.setLayoutParams(relativeLayoutParams);
 
-        //TODO: get photosets from my activity extra, instead of making them here.
         // Statically create photosets, for testing.
-        TestMakePhotoSets();
+        //TestMakePhotoSets();
+
+        //psManager.SerializeList();
+
+
 
         // Create the buttons that will appear on the screen, which the user will click on
         // to view the photoset.
@@ -96,34 +111,44 @@ public class ViewHistory extends ActionBarActivity {
 
         // Loop through each photoset in the photosets list, and create a button that can be
         // clicked on in order to view the photoset in detail.
-        for (int i = 0; i < photoSets.size(); i++) {
+        for (int i = 0; i < psManager.Count(); i++) {
 
             // Create a button for the ith index in the photoSets list.
             Button button = new Button(this);
 
+            // Set the styling of the button:
+            button.setBackgroundColor(Color.parseColor("#CC333333"));
+            button.setTextColor(Color.parseColor("#FFFFFF"));
+            button.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+
             // Set the text that will appear on the button.
             // Currently displays the field name and date taken.
-            button.setText(photoSets.get(i).GetField().name() + " - " +
-                           photoSets.get(i).GetDateTaken());
+            button.setText(psManager.Get(i).GetField().name() + " - " +
+                           psManager.Get(i).GetDateTaken() + " - " +
+                           "Photo Count: " + psManager.Get(i).GetPhotoCount());
 
             // The object that will be passed through the button's intent must be declared final.
-            final PhotoSet ps = photoSets.get(i);
+            final PhotoSet ps = psManager.Get(i);
+
+            final String photoSetIndex = Integer.toString(i);
 
             // Create the intent for this button.
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
                     Intent myIntent = new Intent(view.getContext(), ViewPhotoSet.class);
-                    myIntent.putExtra("PhotoSet", ps);
+                    myIntent.putExtra("PhotoSet", photoSetIndex);
                     startActivityForResult(myIntent, 0);
                 }
             });
 
             // Set the layout for where the button will appear on the screen.
-            topMargin = i * 60;
-            SetButtonLayout(button, RelativeLayout.ALIGN_PARENT_LEFT, 20, topMargin, 20, 5);
+            topMargin = (i * 110) + (10 * (i + 1));
+            SetButtonLayout(button, RelativeLayout.ALIGN_PARENT_LEFT, 10, topMargin, 10, 5);
 
             // Add that button the the buttons List.
             buttons.add(button);
+
+
         }
     }
 
@@ -139,8 +164,8 @@ public class ViewHistory extends ActionBarActivity {
     private void SetButtonLayout(Button button, int centered, int marginLeft, int marginTop,
                                  int marginRight, int marginBottom) {
         RelativeLayout.LayoutParams buttonLayoutParameters =
-                new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-                                                RelativeLayout.LayoutParams.WRAP_CONTENT);
+                new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                                                RelativeLayout.LayoutParams.MATCH_PARENT);
 
         buttonLayoutParameters.setMargins(marginLeft, marginTop, marginRight, marginBottom);
 
@@ -154,16 +179,16 @@ public class ViewHistory extends ActionBarActivity {
 
         //field type and name will be replaced by a field object containing type, name, and location.
 
-        photoSets.add(new PhotoSet("Aphid", new Field("Field 1", "Soy Bean"), new GregorianCalendar(2014, 9, 29)));
-        photoSets.add(new PhotoSet("Aphid", new Field("Field 5", "Soy Bean"), new GregorianCalendar(2014, 10, 2)));
-        photoSets.add(new PhotoSet("Aphid", new Field("Field 5", "Soy Bean"), new GregorianCalendar(2014, 10, 20)));
-        photoSets.add(new PhotoSet("Aphid", new Field("Field 3", "Soy Bean"), new GregorianCalendar(2014, 10, 22)));
-        photoSets.add(new PhotoSet("Aphid", new Field("Field 5", "Soy Bean"), new GregorianCalendar(2014, 11, 7)));
-        photoSets.add(new PhotoSet("Aphid", new Field("Field 2", "Soy Bean"), new GregorianCalendar(2014, 11, 15)));
-        photoSets.add(new PhotoSet("Aphid", new Field("Field 4", "Soy Bean"), new GregorianCalendar(2014, 11, 19)));
-        photoSets.add(new PhotoSet("Aphid", new Field("Field 8", "Soy Bean"), new GregorianCalendar(2014, 11, 20)));
-        photoSets.add(new PhotoSet("Aphid", new Field("Field 6", "Soy Bean"), new GregorianCalendar(2014, 11, 22)));
-        photoSets.add(new PhotoSet("Aphid", new Field("Field 7", "Soy Bean"), new GregorianCalendar(2014, 11, 28)));
+        psManager.Add(new PhotoSet("Aphid", new Field("Field 1", "Soy Bean"), new GregorianCalendar(2014, 9, 29)));
+        psManager.Add(new PhotoSet("Aphid", new Field("Field 97", "Soy Bean"), new GregorianCalendar(2014, 10, 2)));
+        psManager.Add(new PhotoSet("Aphid", new Field("Field 54", "Soy Bean"), new GregorianCalendar(2014, 10, 20)));
+        psManager.Add(new PhotoSet("Aphid", new Field("Field 3", "Soy Bean"), new GregorianCalendar(2014, 10, 22)));
+        psManager.Add(new PhotoSet("Aphid", new Field("Field 5", "Soy Bean"), new GregorianCalendar(2014, 11, 7)));
+        psManager.Add(new PhotoSet("Aphid", new Field("Field 2", "Soy Bean"), new GregorianCalendar(2014, 11, 15)));
+        psManager.Add(new PhotoSet("Aphid", new Field("Field 4", "Soy Bean"), new GregorianCalendar(2014, 11, 19)));
+        psManager.Add(new PhotoSet("Aphid", new Field("Field 8", "Soy Bean"), new GregorianCalendar(2014, 11, 20)));
+        psManager.Add(new PhotoSet("Aphid", new Field("Field 6", "Soy Bean"), new GregorianCalendar(2014, 11, 22)));
+        psManager.Add(new PhotoSet("Aphid", new Field("Field 7", "Soy Bean"), new GregorianCalendar(2014, 11, 28)));
     }
 
 }

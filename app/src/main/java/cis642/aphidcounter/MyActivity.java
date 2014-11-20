@@ -10,10 +10,15 @@ import android.content.Intent;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+import org.opencv.android.OpenCVLoader;
+
 import java.util.ArrayList;
 
 
+import cis642.aphidcounter.activity.TakePhotos;
 import cis642.aphidcounter.entity.Field;
+import cis642.aphidcounter.manager.FileManager;
+import cis642.aphidcounter.manager.PhotoSetManager;
 import cis642.aphidcounter.storage.AddField;
 import cis642.aphidcounter.storage.SelectField;
 
@@ -24,9 +29,22 @@ public class MyActivity extends Activity {
     private String fileName = "MyFields.txt";
     private String filePath = "MyFileStorage";
 
+    private FileManager fileManager = new FileManager();
+
+    /**
+     * A list of photosets.
+     */
+    //private ArrayList<PhotoSet> photoSets = new ArrayList<PhotoSet>();
+    private static PhotoSetManager psManager = PhotoSetManager.GetInstance();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (!OpenCVLoader.initDebug()) {
+            // Handle initialization error
+        }
+
         setContentView(R.layout.activity_my);
         //StringBuffer datax = new StringBuffer("");
 
@@ -90,6 +108,15 @@ public class MyActivity extends Activity {
             e.printStackTrace();
         }
         //myInputText.setText(myData);*/
+
+        Button takePhotos = (Button) findViewById(R.id.takePhotos);
+        takePhotos.setOnClickListener(new OnClickListener() {
+            public void onClick(View view) {
+                Intent myIntent = new Intent(view.getContext(), TakePhotos.class);
+                startActivityForResult(myIntent, 0);
+            }
+
+        });
 
         /**
          * Create the 'Add New Field' button.

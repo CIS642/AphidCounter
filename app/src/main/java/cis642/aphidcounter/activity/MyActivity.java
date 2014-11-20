@@ -10,10 +10,15 @@ import android.content.Intent;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+import org.opencv.android.OpenCVLoader;
+
 import java.util.ArrayList;
 
 
+import cis642.aphidcounter.MainActivity;
+import cis642.aphidcounter.PhotoSet;
 import cis642.aphidcounter.R;
+import cis642.aphidcounter.ViewHistory;
 import cis642.aphidcounter.entity.Field;
 import cis642.aphidcounter.storage.AddField;
 import cis642.aphidcounter.storage.SelectField;
@@ -21,86 +26,39 @@ import cis642.aphidcounter.storage.SelectField;
 
 public class MyActivity extends Activity {
     public ArrayList<Field> listOfFields = new ArrayList<Field>();
+    public ArrayList<PhotoSet> listOfPhotoSets = new ArrayList<PhotoSet>();
     private String fileName = "MyFields.txt";
     private String filePath = "MyFileStorage";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (!OpenCVLoader.initDebug()) {
+            // Handle initialization error
+        }
         setContentView(R.layout.activity_my);
-        //StringBuffer datax = new StringBuffer("");
 
-        //Change reading of file to method in SelectField.class
-       /* listOfFields.add(new Field("First Field", "Bug 1"));
-        listOfFields.add(new Field("Second Field", "Bug 2"));
-        listOfFields.add(new Field("Third Field", "Bug 3"));*/
-        /*try {
-
-            FileInputStream fis = this.openFileInput(fileName);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            listOfFields = (ArrayList<Field>) ois.readObject();
-
-            fis.close();
-
-            ois.close();
-            /*final InputStreamReader isr = new InputStreamReader(fis);
-            BufferedReader buffReader = new BufferedReader(isr);
-            String readString = buffReader.readLine();
-            while(readString != null) {
-                datax.append(readString);
-                readString = buffReader.readLine();
-            }
-            isr.close();
-
-        }
-        catch (ClassNotFoundException cnfe) {
-            cnfe.printStackTrace();
-        }
-        catch (IOException e) {
-
-            e.printStackTrace();
-        }*/
-
-        /*String savedDataOfFields = datax.toString();
-        JSONArray fieldArray = new JSONArray();
-
-        for(int i = 0; i < fieldArray.length(); i++) {
-            try {
-                JSONObject object = fieldArray.getJSONObject(i);
-
-            }
-            catch(Exception e) {
-                break;
-            }
-
-        }*/
-
-        /*String myData = "";
-        try {
-            FileInputStream fis = new FileInputStream(myInternalFile);
-            DataInputStream in = new DataInputStream(fis);
-            BufferedReader br =
-                    new BufferedReader(new InputStreamReader(in));
-            String strLine;
-            while ((strLine = br.readLine()) != null) {
-                myData = myData + strLine;
-            }
-            in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //myInputText.setText(myData);*/
-
-        Button addFieldScreen = (Button) findViewById(R.id.addFieldButton);
-        addFieldScreen.setOnClickListener(new OnClickListener() {
+        //TakePhotos button binding
+        Button takePhotos = (Button) findViewById(R.id.takePhotos);
+        takePhotos.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
-                Intent myIntent = new Intent(view.getContext(), AddField.class);
-                //myIntent.putExtra("fields", listOfFields);
+                Intent myIntent = new Intent(view.getContext(), TakePhotos.class);
                 startActivityForResult(myIntent, 0);
             }
 
         });
 
+        //AddField button binding
+        Button addFieldScreen = (Button) findViewById(R.id.addFieldButton);
+        addFieldScreen.setOnClickListener(new OnClickListener() {
+            public void onClick(View view) {
+                Intent myIntent = new Intent(view.getContext(), AddField.class);
+                startActivityForResult(myIntent, 0);
+            }
+
+        });
+
+        //SelectField button binding
         Button selectFieldScreen = (Button) findViewById(R.id.selectField);
         selectFieldScreen.setOnClickListener(new OnClickListener() {
            public void onClick(View view) {
@@ -109,7 +67,25 @@ public class MyActivity extends Activity {
                startActivityForResult(myIntent, 0);
            }
         });
-/*
+
+        //ViewHistory button binding
+        Button viewHistory = (Button) findViewById(R.id.btnViewHistory);
+        viewHistory.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent myIntent = new Intent(view.getContext(), ViewHistory.class);
+                startActivityForResult(myIntent, 0);
+            }
+        });
+
+        //ConversionTest button binding
+        Button conversionTest = (Button) findViewById(R.id.btnConversionTest);
+        conversionTest.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent myIntent = new Intent(view.getContext(), MainActivity.class);
+                startActivityForResult(myIntent, 0);
+            }
+        });
+        /*
         Button next = (Button) findViewById(R.id.addPhotos);
         next.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -189,8 +165,6 @@ public class MyActivity extends Activity {
         intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
         startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);*/
     }
-
-
 }
 
 

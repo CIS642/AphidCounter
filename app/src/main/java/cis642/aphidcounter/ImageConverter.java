@@ -103,7 +103,7 @@ public class ImageConverter {
         Log.i("Process Trace","Background removed");
         */
 
-
+/**/
 
 
         Imgproc.medianBlur(convertedImage, convertedImage, 3);
@@ -118,7 +118,7 @@ public class ImageConverter {
         //Removing Background and Noise
 
 
-
+/*
         //Initial Contrast enhancement
         Imgproc.equalizeHist(convertedImage,convertedImage);
 
@@ -132,7 +132,7 @@ public class ImageConverter {
 
 
         Imgproc.equalizeHist(convertedImage,convertedImage);
-
+*/
     }
 
 }

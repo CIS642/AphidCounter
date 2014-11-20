@@ -7,6 +7,7 @@
     <string name="testing_process">Button For Testing</string>
     <string name="bug_prompt">Choose a Bug</string>
     <string name="crop_prompt">Choose a Crop Type</string>
+    <string name="field_prompt">Choose a Field</string>
     <string name="take_photo">Examine Photo</string>
     <string name="about_text">ABOUT TEXT GOES HERE</string>
     <string name="about_label">ABOUT LABEL GOES HERE</string>
@@ -16,18 +17,31 @@
     <string name="instruction_label">INSTRUCTION LABEL GOED HERE</string>
     <string name="addField_label">Add Field</string>
     <string name="selectField_label">Select Field</string>
+
     <string-array name="bugTypes">
+        <item></item>
         <item>Aphid</item>
         <item>Mosquito</item>
         <item>Bee</item>
     </string-array>
+
     <string-array name="cropTypes">
+        <item></item>
         <item>Soy</item>
         <item>Corn</item>
         <item>Wheat</item>
     </string-array>
 
+    <string-array name="allFields">
+        <item></item>
+        <item>TEST Field 1</item>
+        <item>TEST Field 2</item>
+        <item>TEST field A</item>
+    </string-array>
+
     <string name="title_activity_view_history">ViewHistory</string>
     <string name="title_activity_view_photo_set">ViewPhotoSet</string>
+    <string name="title_activity_capture_photo">Capture Photo</string>
+    <string name="title_activity_take_photo">Take Photo</string>
 
 </resources>

@@ -16,6 +16,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -48,11 +49,11 @@ public class SelectField extends ListActivity {
 
         Cursor c = getAllFields();
         mAdapter = new SimpleCursorAdapter(this, R.layout.list_layout, c, DatabaseOpenHelper.columns, new int[] {R.id._id, R.id.fieldName,R.id.cropName},0);
-
         setListAdapter(mAdapter);
+
     }
+
     private Cursor getAllFields(){
         return mDbHelper.getWritableDatabase().query(DatabaseOpenHelper.TABLE_NAME,DatabaseOpenHelper.columns,null,new String[] {},null,null,null);
     }
-
 }
