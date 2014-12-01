@@ -10,8 +10,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -45,38 +47,16 @@ public class ViewHistory extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_view_history);
 
-        // Make this screen scrollable (have a scroll bar)
-        ScrollView scrollView = new ScrollView(this);
+        // Set the event handler for the go back button:
+        SetBackButtonListener();
 
-        RelativeLayout relativeLayout = new RelativeLayout(this);
-
-        // Set the layout parameters
-        RelativeLayout.LayoutParams relativeLayoutParams =
-                new RelativeLayout.LayoutParams(
-                        RelativeLayout.LayoutParams.FILL_PARENT,
-                        RelativeLayout.LayoutParams.FILL_PARENT);
-
-        scrollView.setLayoutParams(relativeLayoutParams);
-
-        // Statically create photosets, for testing.
-        //TestMakePhotoSets();
-
-        //psManager.SerializeList();
-
-
+        LinearLayout historyList = (LinearLayout) findViewById(R.id.historyLayout);
 
         // Create the buttons that will appear on the screen, which the user will click on
         // to view the photoset.
-        CreateButtons();
-
-        // Add each button to the layout.
-        for (int i = 0; i < buttons.size(); i ++)
-            relativeLayout.addView(buttons.get(i));
-
-        scrollView.addView(relativeLayout);
-        setContentView(scrollView, relativeLayoutParams);
-
+        CreateButtons(historyList);
     }
 
 
@@ -99,22 +79,59 @@ public class ViewHistory extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+    /**
+     * Set the event handler for the 'Back' button click.
+     */
+    private void SetBackButtonListener()
+    {
+        Button goBack = (Button) findViewById(R.id.goBackButton);
+
+        goBack.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                finish();
+            }
+
+        });
+    }
+
     /**
      * Create a button for each Photoset.
      * Each button will have the field name and Date the photos were taken.
      * CLicking the button will then start a new activity, showing the
      * bug type, crop type, and avg number of aphids for the entire set.
      */
-    private void CreateButtons() {
+    private void CreateButtons(LinearLayout historyList)
+    {
+        GregorianCalendar photoSetDate = new GregorianCalendar();
+        boolean showDateFlag = true;
 
-        int topMargin = 0;
+        for (int i = (psManager.Count() - 1); i >= 0; i--)
+        {
 
-        // Loop through each photoset in the photosets list, and create a button that can be
-        // clicked on in order to view the photoset in detail.
-        for (int i = 0; i < psManager.Count(); i++) {
+            // Compare the date of this photoset with the date of the previous.
+            // If the date is different, a new TextView with the current photo set's date
+            // will be added to the view, to seperate photosets taken on different days.
+            if (!DateToString(photoSetDate).equals(DateToString(psManager.Get(i).GetDate())))
+            {
+                photoSetDate = psManager.Get(i).GetDate();
+                showDateFlag = true;
+            }
+
+            if (showDateFlag)
+            {
+                historyList.addView(CreateDateHeader(photoSetDate));
+                showDateFlag = false;
+            }
 
             // Create a button for the ith index in the photoSets list.
             Button button = new Button(this);
+
+            // Set the parameters of the button:
+            button.setPadding(5, 10, 5, 10);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(0, 10, 0, 0);
 
             // Set the styling of the button:
             button.setBackgroundColor(Color.parseColor("#CC333333"));
@@ -124,8 +141,8 @@ public class ViewHistory extends ActionBarActivity {
             // Set the text that will appear on the button.
             // Currently displays the field name and date taken.
             button.setText(psManager.Get(i).GetField().name() + " - " +
-                           psManager.Get(i).GetDateTaken() + " - " +
-                           "Photo Count: " + psManager.Get(i).GetPhotoCount());
+                    psManager.Get(i).GetDateTaken() + " - " +
+                    "Photo Count: " + psManager.Get(i).GetPhotoCount());
 
             // The object that will be passed through the button's intent must be declared final.
             final PhotoSet ps = psManager.Get(i);
@@ -141,54 +158,62 @@ public class ViewHistory extends ActionBarActivity {
                 }
             });
 
-            // Set the layout for where the button will appear on the screen.
-            topMargin = (i * 110) + (10 * (i + 1));
-            SetButtonLayout(button, RelativeLayout.ALIGN_PARENT_LEFT, 10, topMargin, 10, 5);
-
-            // Add that button the the buttons List.
-            buttons.add(button);
-
-
+            historyList.addView(button, layoutParams);
         }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 0)
+        {
+            if (resultCode == 0)
+                finish();
+        }
+
     }
 
     /**
-     * Set the parameters for the button layout.
-     * @param button The button.
-     * @param centered Located where in relation to the parent.
-     * @param marginLeft Left margin.
-     * @param marginTop Top margin.
-     * @param marginRight Right margin.
-     * @param marginBottom Button margin.
+     * Create a header that displays the date.
+     * @param photoSetDate The date to display.
+     * @return Text view to be added to the main view.
      */
-    private void SetButtonLayout(Button button, int centered, int marginLeft, int marginTop,
-                                 int marginRight, int marginBottom) {
-        RelativeLayout.LayoutParams buttonLayoutParameters =
-                new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
-                                                RelativeLayout.LayoutParams.MATCH_PARENT);
+    private TextView CreateDateHeader(GregorianCalendar photoSetDate)
+    {
+        TextView tv = new TextView(this);
+        tv.setText(DateToString(photoSetDate));
+        tv.setTextSize(16);
+        tv.setPadding(2, 10, 2, 0);
 
-        buttonLayoutParameters.setMargins(marginLeft, marginTop, marginRight, marginBottom);
-
-        button.setLayoutParams(buttonLayoutParameters);
+        return tv;
     }
 
     /**
-     * For testing. Statically creates a bunch of photo sets.
+     * Converts the date into a readable string.
+     * @param date The date.
+     * @return The date as a string that is easy to read
      */
-    private void TestMakePhotoSets() {
-
-        //field type and name will be replaced by a field object containing type, name, and location.
-
-        psManager.Add(new PhotoSet("Aphid", new Field("Field 1", "Soy Bean"), new GregorianCalendar(2014, 9, 29)));
-        psManager.Add(new PhotoSet("Aphid", new Field("Field 97", "Soy Bean"), new GregorianCalendar(2014, 10, 2)));
-        psManager.Add(new PhotoSet("Aphid", new Field("Field 54", "Soy Bean"), new GregorianCalendar(2014, 10, 20)));
-        psManager.Add(new PhotoSet("Aphid", new Field("Field 3", "Soy Bean"), new GregorianCalendar(2014, 10, 22)));
-        psManager.Add(new PhotoSet("Aphid", new Field("Field 5", "Soy Bean"), new GregorianCalendar(2014, 11, 7)));
-        psManager.Add(new PhotoSet("Aphid", new Field("Field 2", "Soy Bean"), new GregorianCalendar(2014, 11, 15)));
-        psManager.Add(new PhotoSet("Aphid", new Field("Field 4", "Soy Bean"), new GregorianCalendar(2014, 11, 19)));
-        psManager.Add(new PhotoSet("Aphid", new Field("Field 8", "Soy Bean"), new GregorianCalendar(2014, 11, 20)));
-        psManager.Add(new PhotoSet("Aphid", new Field("Field 6", "Soy Bean"), new GregorianCalendar(2014, 11, 22)));
-        psManager.Add(new PhotoSet("Aphid", new Field("Field 7", "Soy Bean"), new GregorianCalendar(2014, 11, 28)));
+    private String DateToString(GregorianCalendar date)
+    {
+        return date.get(date.YEAR) + "." +
+                date.get(date.MONTH) + "." +
+                date.get(date.DAY_OF_MONTH);
     }
 
+    /**
+     * Creates the button to go back to the parent activity when pressed.
+     */
+    /*private Button CreateBackButton()
+    {
+        Button goBack = new Button(this);
+
+        goBack.setText("< Back");
+        // Set the styling of the button:
+        goBack.setBackgroundColor(Color.parseColor("#009900"));
+        goBack.setTextColor(Color.parseColor("#FFFFFF"));
+        goBack.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+
+    }*/
 }

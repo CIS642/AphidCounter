@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <bool name="debugValue">true</bool>
+
     <string name="app_name">AphidCounter</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
@@ -19,21 +21,19 @@
     <string name="selectField_label">Select Field</string>
 
     <string-array name="bugTypes">
-        <item></item>
+        <item/>
         <item>Aphid</item>
         <item>Mosquito</item>
         <item>Bee</item>
     </string-array>
-
     <string-array name="cropTypes">
-        <item></item>
+        <item/>
         <item>Soy</item>
         <item>Corn</item>
         <item>Wheat</item>
     </string-array>
-
     <string-array name="allFields">
-        <item></item>
+        <item/>
         <item>TEST Field 1</item>
         <item>TEST Field 2</item>
         <item>TEST field A</item>
@@ -43,5 +43,6 @@
     <string name="title_activity_view_photo_set">ViewPhotoSet</string>
     <string name="title_activity_capture_photo">Capture Photo</string>
     <string name="title_activity_take_photo">Take Photo</string>
+    <string name="title_activity_view_photos">ViewPhotos</string>
 
 </resources>

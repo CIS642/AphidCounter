@@ -33,9 +33,24 @@ public class FileManager
     private final String photoSetFileName = "PhotoSets.txt";
 
     /**
+     * Name of file to store photo information in.
+     */
+    private final String photosFileName = "Photos.txt";
+
+    /**
+     * Name of file to store converted photo information in.
+     */
+    private final String convertedPhotosFileName = "ConvertedPhotos.txt";
+
+    /**
      * The file where the photoset data will be stored.
      */
     private File photoSetDataFile;
+
+    /**
+     * The file where the photo data will be stored.
+     */
+    private File photosDataFile;
 
     /**
      * Initialize this class and try to create the directories.
@@ -68,6 +83,12 @@ public class FileManager
      * @return
      */
     public File GetPhotoSetDataFile() { return this.photoSetDataFile; }
+
+    /**
+     * Get the file where the photo data is stored.
+     * @return
+     */
+    public File GetPhotosDataFile() { return this.photosDataFile; }
 
     /**
      * Attempt to create the directories and files if they do not already exist.
@@ -105,6 +126,12 @@ public class FileManager
         }
 
 
+
+        /////////////////////////////////////////////////////////////////////////////////
+
+
+
+        // Create the PhotoSets.txt file:
         photoSetDataFile = new File(photoSetDirectory + File.separator + photoSetFileName);
 
         // If the file does not exist, create it:
@@ -113,6 +140,19 @@ public class FileManager
             try
             {
                 photoSetDataFile.createNewFile();
+            } catch (Exception ex) { ex.printStackTrace(); }
+        }
+
+
+        // Create the Photos.txt file:
+        photosDataFile = new File(photoSetDirectory + File.separator + photosFileName);
+
+        // If the file does not exist, create it:
+        if (!photosDataFile.exists())
+        {
+            try
+            {
+                photosDataFile.createNewFile();
             } catch (Exception ex) { ex.printStackTrace(); }
         }
 
@@ -146,5 +186,6 @@ public class FileManager
     {
         return (new File(photoSetDirectory + File.separator + photoSetDataFile)).exists();
     }
+
 
 }

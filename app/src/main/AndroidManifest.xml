@@ -22,19 +22,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.TakePhotos"
+        <activity
+            android:name=".activity.TakePhotos"
             android:label="@string/title_activity_take_photo"
             android:parentActivityName=".activity.MyActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="cis642.aphidcounter.MyActivity" />
+                android:value="cis642.aphidcounter.activity.MyActivity" />
         </activity>
-        <activity android:name=".CapturePhoto"
+        <activity
+            android:name=".CapturePhoto"
             android:label="@string/title_activity_capture_photo"
             android:parentActivityName=".activity.MyActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="cis642.aphidcounter.MyActivity" />
+                android:value="cis642.aphidcounter.activity.MyActivity" />
         </activity>
         <activity
             android:name=".ViewHistory"
@@ -42,11 +44,12 @@
             android:parentActivityName=".activity.MyActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="cis642.aphidcounter.MyActivity" />
+                android:value="cis642.aphidcounter.activity.MyActivity" />
         </activity>
         <activity
             android:name=".ViewPhotoSet"
             android:label="@string/title_activity_view_photo_set"
+            android:launchMode="singleTop"
             android:parentActivityName=".ViewHistory" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -58,7 +61,7 @@
             android:parentActivityName=".activity.MyActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="cis642.aphidcounter.MyActivity" />
+                android:value="cis642.aphidcounter.activity.MyActivity" />
         </activity>
         <activity
             android:name=".storage.SelectField"
@@ -74,7 +77,15 @@
             android:parentActivityName=".activity.MyActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="cis642.aphidcounter.MyActivity" />
+                android:value="cis642.aphidcounter.activity.MyActivity" />
+        </activity>
+        <activity
+            android:name=".activity.ViewPhotos"
+            android:label="@string/title_activity_view_photos"
+            android:parentActivityName=".ViewPhotoSet" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="cis642.aphidcounter.ViewPhotoSet" />
         </activity>
     </application>
 

@@ -11,16 +11,19 @@ import java.util.GregorianCalendar;
 import java.text.DateFormatSymbols;
 
 import cis642.aphidcounter.entity.Field;
+import cis642.aphidcounter.manager.FileManager;
 
 /**
  * Created by Staton on 10/22/2014.
  */
 public class PhotoSet implements Serializable {
 
+    FileManager fileManager = new FileManager();
+
     /**
-     * The index of this photoset in PhotoSetManager's list of PhotoSets.
+     * The id of this photo set.
      */
-    private int index;
+    private String id;
     /**
      * The type of bugs in this set of photos.
      */
@@ -41,12 +44,12 @@ public class PhotoSet implements Serializable {
     /**
      * A list of all the photo filenames for this set.
      */
-    private ArrayList<String> photos;
+    private ArrayList<AphidPhoto> photos;
 
     /**
      * A list of all the converted photo filenames for this set.
      */
-    private ArrayList<String> convertedPhotos;
+    private ArrayList<AphidPhoto> convertedPhotos;
 
     /**
      * Constructs a new PhotoSet object, which contains a set of photos and information about
@@ -56,23 +59,66 @@ public class PhotoSet implements Serializable {
      * @param dateTaken The date the photos were taken on.
      */
     public PhotoSet(String bugType, Field field, GregorianCalendar dateTaken) {
-        photos = new ArrayList<String>();
+        photos = new ArrayList<AphidPhoto>();
+        convertedPhotos = new ArrayList<AphidPhoto>();
         this.bugType = bugType;
         this.field = field;
         this.dateTaken = dateTaken;
     }
 
     /**
+     * Construct an Aphid Photo from a CSV line.
+     * @param csv - the CSV line.
+     */
+    public PhotoSet(String csv)
+    {
+        photos = new ArrayList<AphidPhoto>();
+        convertedPhotos = new ArrayList<AphidPhoto>();
+
+        String str[] = csv.split(",", -1);
+        String date[] = str[1].split("\\.", -1);
+
+        this.id = str[0];
+        this.dateTaken = new GregorianCalendar(Integer.parseInt(date[0]),
+                                               Integer.parseInt(date[1]),
+                                               Integer.parseInt(date[2]));
+
+        this.bugType = str[2];
+        this.field = new Field(str[3], str[4]);
+
+        int startIndexOfConvertedPhoto = 5;
+
+        // add the original photos:
+        for (int i = 5; i < str.length; i++) {
+            // todo: also check for converted photos existing.
+            startIndexOfConvertedPhoto = i;
+
+            if (str[i].charAt(0) == 'c')
+                i = str.length;
+            else if (fileManager.PhotoExists(str[i]))
+                photos.add(new AphidPhoto(str[i], this.field, this.dateTaken));
+        }
+
+        // add the converted photos:
+        for (int j = startIndexOfConvertedPhoto; j < str.length; j++)
+        {
+            if (fileManager.PhotoExists(str[j]))
+                convertedPhotos.add(new AphidPhoto(str[j], this.field, this.dateTaken));
+        }
+
+    }
+
+    /**
      * Get the index of this photoset.
      * @return This photoset's index number.
      */
-    public int GetPhotoSetIndex() { return this.index; }
+    public String GetPhotoSetID() { return this.id; }
 
     /**
      * Set the index of this photoset.
      * @param i The index of the photoset.
      */
-    public void SetPhotoSetIndex(int i) { this.index = i; }
+    public void SetPhotoSetID(String i) { this.id = i; }
     /**
      * Gets the type of bug in this photo set.
      * @return The type of bug that was photographed.
@@ -105,11 +151,18 @@ public class PhotoSet implements Serializable {
      * Gets the date the photos were taken on.
      * @return The date the photos were taken on.
      */
-    public String GetDateTaken() {
+    public String GetDateTaken()
+    {
         return this.dateTaken.get(dateTaken.YEAR) + "." +
                this.dateTaken.get(dateTaken.MONTH) + "." +
                this.dateTaken.get(dateTaken.DAY_OF_MONTH);
     }
+
+    /**
+     * Get the date (gregorian calender) this photoset was taken on.
+     * @return
+     */
+    public GregorianCalendar GetDate(){ return this.dateTaken; }
 
     /**
      * Set the date taken.
@@ -122,7 +175,7 @@ public class PhotoSet implements Serializable {
      * @param i The index in the array list for the photo.
      * @return The photo at the given index.
      */
-    public String GetPhoto(int i)
+    public AphidPhoto GetPhoto(int i)
     {
         if (i < this.photos.size())
             return photos.get(i);
@@ -133,10 +186,29 @@ public class PhotoSet implements Serializable {
      * Add a photo to the list of photos in this photo set.
      * @param photo The photo to add.
      */
-    public void AddPhoto(String photo)
+    public void AddPhoto(AphidPhoto photo)
     {
         photos.add(photo);
     }
+
+    /**
+     * Get a converted photo at a specific index.
+     * @param i Index in the converted photo array list.
+     * @return The converted photo.
+     */
+    public AphidPhoto GetConvertedPhoto(int i)
+    {
+        if (i < this.convertedPhotos.size())
+            return convertedPhotos.get(i);
+        return null;
+    }
+
+    /**
+     * Add a converted photo to the list of converted photos.
+     * @param photo The converted photo to add.
+     */
+    public void AddConvertedPhoto(AphidPhoto photo) { convertedPhotos.add(photo); }
+
 
     /**
      * Gets the number of photos in this set.
@@ -145,6 +217,12 @@ public class PhotoSet implements Serializable {
     public int GetPhotoCount() {
         return this.photos.size();
     }
+
+    /**
+     * Gets the number of converted photos in this set.
+     * @return The number of converted photos in this set.
+     */
+    public int GetConvertedPhotoCount() { return this.convertedPhotos.size(); }
 
     /**
      * Gets a string of the month based on an integer number.

@@ -1,106 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="cis642.aphidcounter.ViewPhotoSet">
 
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <LinearLayout
+    <Button
+        style="@style/GreenButtonStyle"
+        android:id="@+id/goBackViewHistory"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:paddingBottom="@dimen/activity_vertical_margin">
+        android:layout_height="wrap_content"
+        android:text="&lt; View History"
+        android:textStyle="bold"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"/>
 
-        <TextView
-            android:id="@+id/bugTypeText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Bug Type: "
-            android:textSize="20dp"
-            android:padding="5dp"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/fieldText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Field: "
-            android:textSize="20dp"
-            android:padding="5dp"/>
-
-        <TextView
-            android:id="@+id/cropType"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Crop Type: "
-            android:textSize="20dp"
-            android:padding="5dp"/>
-
-        <TextView
-            android:id="@+id/dateTakenText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Date Taken: "
-            android:textSize="20dp"
-            android:padding="5dp"/>
-
-        <TextView
-            android:id="@+id/numberOfPhotosText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Number of Photos: "
-            android:textSize="20dp"
-            android:padding="5dp"/>
-
-        <TextView
-            android:id="@+id/avgBugCountText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Average Bug Count: "
-            android:textSize="20dp"
-            android:padding="5dp"/>
-
-        <Button
-            android:id="@+id/originalPhotos"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="View Original Photos"
-            android:textSize="24dp"
-            android:padding="20dp"
-            android:layout_marginTop="8dp"/>
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/convertedPhotos"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="View Converted Photos"
-            android:textSize="24dp"
-            android:padding="20dp"
-            android:layout_marginTop="8dp"/>
+            <TextView
+                android:id="@+id/bugTypeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bug Type: "
+                android:textSize="16dp"
+                android:padding="5dp"/>
 
-        <!--
-        <Button
-            android:id="@+id/convertPhotos"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="CONVERT PHOTOS"
-            android:textSize="24dp"
-            android:padding="20dp"
-            android:layout_marginTop="8dp"/>
-        -->
+            <TextView
+                android:id="@+id/fieldText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Field: "
+                android:textSize="16dp"
+                android:padding="5dp"/>
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/cropType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Crop Type: "
+                android:textSize="16dp"
+                android:padding="5dp"/>
 
-</ScrollView>
+            <TextView
+                android:id="@+id/dateTakenText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date Taken: "
+                android:textSize="16dp"
+                android:padding="5dp"/>
 
-</RelativeLayout>
+            <TextView
+                android:id="@+id/numberOfPhotosText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Number of Photos: "
+                android:textSize="16dp"
+                android:padding="5dp"/>
+
+            <TextView
+                android:id="@+id/avgBugCountText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Average Bug Count: "
+                android:textSize="16dp"
+                android:padding="5dp"/>
+
+            <Button
+                style="@style/ButtonsStyle"
+                android:id="@+id/originalPhotos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="View Original Photos"
+                android:padding="20dp"
+                android:layout_marginTop="8dp"/>
+
+            <Button
+                style="@style/ButtonsStyle"
+                android:id="@+id/convertedPhotos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="View Converted Photos"
+                android:padding="20dp"
+                android:layout_marginTop="8dp"/>
+
+            <Button
+                style="@style/RedButtonStyle"
+                android:id="@+id/deletePhotoSet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Delete this Photo Set"
+                android:padding="20dp"
+                android:layout_marginTop="8dp"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

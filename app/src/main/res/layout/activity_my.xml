@@ -29,6 +29,7 @@
         android:layout_height="80dp"
         />
 
+<!--
     <Button
         style="@style/ButtonsStyle"
         android:id="@+id/addFieldButton"
@@ -46,6 +47,7 @@
         android:layout_width="match_parent"
         android:layout_height="80dp"
         />
+-->
 
     <Button
         style="@style/ButtonsStyle"

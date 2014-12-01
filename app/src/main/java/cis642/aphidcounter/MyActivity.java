@@ -118,9 +118,8 @@ public class MyActivity extends Activity {
 
         });
 
-        /**
-         * Create the 'Add New Field' button.
-         */
+/*
+
         Button addFieldScreen = (Button) findViewById(R.id.addFieldButton);
         addFieldScreen.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
@@ -139,6 +138,7 @@ public class MyActivity extends Activity {
                startActivityForResult(myIntent, 0);
            }
         });
+*/
 
         /**
          * Create the 'View History' button.

@@ -1,98 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="1">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Please Select Type of Bug"
-        android:id="@+id/textView"
-        android:layout_gravity="center_horizontal" />
-
-    <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/bugTypeSpinner"
-        android:layout_gravity="center_horizontal"
-        android:spinnerMode="dropdown"
-        android:entries="@array/bugTypes"
-        android:prompt="@string/bug_prompt" />
-
-    <!--
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Please Select Type of Crop"
-        android:id="@+id/textView2"
-        android:layout_gravity="center_horizontal" />
-
-    <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/cropTypeSpinner"
-        android:layout_gravity="center_horizontal"
-        android:spinnerMode="dropdown"
-        android:entries="@array/cropTypes"
-        android:prompt="@string/crop_prompt"
-        android:clickable="true" />
-    -->
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Please Select the field"
-        android:id="@+id/textView2"
-        android:layout_gravity="center_horizontal" />
-
-    <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/fieldTypeSpinner"
-        android:layout_gravity="center_horizontal"
-        android:spinnerMode="dropdown"
-        android:prompt="@string/field_prompt"
-        android:clickable="true" />
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin">
 
     <Button
-        android:layout_width="wrap_content"
+        style="@style/GreenButtonStyle"
+        android:id="@+id/goBackButton"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Take Photo"
-        android:textSize="24dp"
-        android:id="@+id/accessCameraButton"
-        android:layout_gravity="center_horizontal"
-        android:clickable="true"
-        android:enabled="true" />
+        android:text="&lt; Home"
+        android:textStyle="bold"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:layout_marginBottom="16dp"/>
 
-    <TextView
-        android:id="@+id/photoCountText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Current Photo Count: 0"
-        android:layout_gravity="center_horizontal"
-        android:textSize="20dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="20dp"
-        android:visibility="invisible"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/finishPhotoSet"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="40dp"
-        android:text="Done"
-        android:textSize="24dp"
-        android:clickable="false"
-        android:visibility="invisible"/>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Please Select Type of Bug"
+                android:id="@+id/textView"
+                android:layout_gravity="center_horizontal" />
+
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/bugTypeSpinner"
+                android:layout_gravity="center_horizontal"
+                android:spinnerMode="dropdown"
+                android:entries="@array/bugTypes"
+                android:prompt="@string/bug_prompt" />
+
+            <!--
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Please Select Type of Crop"
+                android:id="@+id/textView2"
+                android:layout_gravity="center_horizontal" />
+
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/cropTypeSpinner"
+                android:layout_gravity="center_horizontal"
+                android:spinnerMode="dropdown"
+                android:entries="@array/cropTypes"
+                android:prompt="@string/crop_prompt"
+                android:clickable="true" />
+            -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Please Select the field"
+                android:id="@+id/textView2"
+                android:layout_gravity="center_horizontal" />
+
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/fieldTypeSpinner"
+                android:layout_gravity="center_horizontal"
+                android:spinnerMode="dropdown"
+                android:entries="@array/allFields"
+                android:prompt="@string/field_prompt"
+                android:clickable="true" />
+
+            <Button
+                style="@style/ButtonsStyle"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginTop="20dp"
+                android:text="Take Photo"
+                android:id="@+id/accessCameraButton"
+                android:layout_gravity="center_horizontal"
+                android:clickable="true"
+                android:enabled="false" />
+
+            <TextView
+                android:id="@+id/photoCountText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Current Photo Count: 0"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="20dp"
+                android:visibility="invisible"/>
+
+            <Button
+                style="@style/GreenButtonStyle"
+                android:id="@+id/finishPhotoSet"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="40dp"
+                android:text="Done"
+                android:clickable="false"
+                android:visibility="invisible"/>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>
 

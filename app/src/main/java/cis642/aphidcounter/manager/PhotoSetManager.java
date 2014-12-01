@@ -4,9 +4,11 @@ import android.os.Environment;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -23,23 +25,10 @@ import cis642.aphidcounter.entity.Field;
  */
 public class PhotoSetManager
 {
-    private static FileManager fileManager = new FileManager();
-
     /**
-     * Directory of where the photoset data will be stored.
+     * File manager
      */
-    //private static final File fileDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
-    //       + File.separator + "AphidCounter" + File.separator + "PhotoSets");
-
-    /**
-     * Name of file to store the photoset information in.
-     */
-    //private static final String photoSetFileName = "PhotoSets.txt";
-
-    /**
-     * File to store the photoset information in.
-     */
-    //private static File photoSetFile;
+    private FileManager fileManager = new FileManager();
 
     /**
      * The single instance of this class.
@@ -49,16 +38,13 @@ public class PhotoSetManager
     /**
      * The list of photosets.
      */
-    private static ArrayList<PhotoSet> photoSets = new ArrayList<PhotoSet>();
+    private ArrayList<PhotoSet> photoSets = new ArrayList<PhotoSet>();
 
+    /**
+     * Constructs a new photo set manager.
+     */
     private PhotoSetManager()
     {
-        //DeleteAllPhotoSets(); // Call for testing, if you want to delete all saved photosets.
-        //DeserializeList();
-
-        // Create the directory and file for saving photoset information to:
-        //CreateDirectoryAndFile();
-
         LoadPhotoSets();
     }
 
@@ -74,57 +60,11 @@ public class PhotoSetManager
     }
 
     /**
-     * Serialize the list of photo sets.
-     */
-    public static void SerializeList()
-    {
-        // Get the file to read the photosets from.
-        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"PhotoSets.bin");
-
-        // If the file does not exist yet, create it.
-        if(!file.exists())
-        {
-            try
-            {
-                file.createNewFile();
-            } catch (IOException ex) { ex.printStackTrace(); }
-        }
-
-        try
-        {
-            FileOutputStream fos = new FileOutputStream(file);
-            ObjectOutputStream os = new ObjectOutputStream(fos);
-            os.writeObject(photoSets);
-            os.close();
-        } catch (Exception ex) { ex.printStackTrace(); }
-    }
-
-    /**
-     * Deserialize the list of photo sets.
-     */
-    private static void DeserializeList()
-    {
-        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"PhotoSets.bin");
-
-        if (file.exists()) {
-            try {
-                FileInputStream fis = new FileInputStream(file);
-                ObjectInputStream is = new ObjectInputStream(fis);
-                photoSets = (ArrayList<PhotoSet>) is.readObject();
-                is.close();
-            } catch (Exception ex) { ex.printStackTrace(); }
-        }
-
-    }
-
-    /**
      * Adds a new photo set to the list of photosets.
      * @param ps The new photo set to be added.
      */
-    public static void Add(PhotoSet ps)
+    public void Add(PhotoSet ps)
     {
-        // Set the index for this photoset ID.
-        ps.SetPhotoSetIndex(photoSets.size());
         Log.i("ADD PHOTOSET", "this photoset index set at position " + (photoSets.size() - 1));
         Log.i("ADD PHOTOSET", "current size: " + photoSets.size());
 
@@ -140,7 +80,7 @@ public class PhotoSetManager
      * @param i The index of the photo set.
      * @return The requested photo set.
      */
-    public static PhotoSet Get(int i)
+    public PhotoSet Get(int i)
     {
         if (i < photoSets.size())
             return photoSets.get(i);
@@ -148,76 +88,79 @@ public class PhotoSetManager
     }
 
     /**
-     * Removes a photo set.
-     * @param i The index of the photo set to remove.
+     * Gets a photo set by its given ID.
+     * @param id The ID of the photoset.
+     * @return
      */
-    public static void Remove(int i)
+    public PhotoSet GetByID(String id)
     {
-        // todo: get the index of the photoset at i. Then use that index to remove from the file.
-        // todo: then save the newly updated file.
+        for (int i = 0; i < photoSets.size(); i++)
+        {
+            if (photoSets.get(i).GetPhotoSetID().equals(id))
+                return photoSets.get(i);
+        }
+        return null;
+    }
 
-        // Remove the photo set from the list.
-        if (i < photoSets.size() - 1)
-            photoSets.remove(i);
+    /**
+     * Removes a photo set.
+     * @param ps The photo set to remove.
+     */
+    public void Remove(PhotoSet ps)
+    {
 
-        // since the indices for some photosets may have changed, updated the index of each set.
-        for (int j = 0; j < photoSets.size(); j++)
-            photoSets.get(j).SetPhotoSetIndex(j);
+        if(photoSets.contains(ps))
+        {
+            // Remove the photo data from Photos.txt
+            PhotoManager.GetInstance().RemovePhotos(ps.GetPhotoSetID());
+
+            // Delete all the photo files first:
+            for (int i = 0; i < ps.GetPhotoCount(); i++)
+            {
+                String photoPath = fileManager.GetPhotosDirectory() + File.separator + ps.GetPhoto(i).GetPhotoName();
+
+                File photoFile = new File(photoPath);
+
+                if (photoFile.exists())
+                    photoFile.delete();
+            }
+
+            // Delete all the converted photo files:
+            for (int j = 0; j < ps.GetConvertedPhotoCount(); j++)
+            {
+                String photoPath = fileManager.GetConvertedPhotosDirectory() + File.separator + ps.GetConvertedPhoto(j).GetPhotoName();
+
+                File photoFile = new File(photoPath);
+
+                if (photoFile.exists())
+                    photoFile.delete();
+            }
+
+            // Get the ID of this photo set:
+            String id = ps.GetPhotoSetID();
+
+            // Remove the photoset data from Photosets.txt file
+            RemovePhotoSetAndSave(id);
+
+            // Remove the photo set from the list.
+            photoSets.remove(ps);
+        }
+
     }
 
     /**
      * Gets the number of photo sets.
      * @return The number of photo sets.
      */
-    public static int Count()
+    public int Count()
     {
         return photoSets.size();
     }
 
     /**
-     * For testing. Deletes all the photo sets.
+     * Save the photo sets to the photosets data file.
      */
-    private static void DeleteAllPhotoSets()
-    {
-        for (int i = 0; i < photoSets.size(); i++)
-            photoSets.remove(i);
-        //SerializeList();
-    }
-
-    /**
-     * Attempts to create the directory and file for saving the photosets to.
-     * Note: If the app gives a 'Permission Denied' error, change the settings on your phone
-     * from "Mount as disk drive" to "charge only over usb".
-     */
- /*   private void CreateDirectoryAndFile()
-    {
-        // If the directory does not exist, create it:
-        if (!fileDirectory.exists())
-        {
-            Log.i("PHOTOSET MANAGER", "Directory doesn't exist");
-            try
-            {
-                fileDirectory.mkdirs();
-                Log.i("PHOTOSET MANAGER", "Directory created");
-            } catch (Exception e) { e.printStackTrace(); }
-        }
-
-        photoSetFile = new File(fileDirectory + File.separator + photoSetFileName);
-
-        // If the file does not exist, create it:
-        if (!photoSetFile.exists())
-        {
-            Log.i("PHOTOSET MANAGER", "Photoset file does not exist");
-            try
-            {
-                photoSetFile.createNewFile();
-                Log.i("PHOTOSET MANAGER", "Photoset file created");
-            } catch (Exception ex) { ex.printStackTrace(); }
-        }
-
-    }*/
-
-    public static void Save()
+    public void Save()
     {
         SavePhotoSets();
     }
@@ -225,14 +168,12 @@ public class PhotoSetManager
     /**
      * Saves the photo sets.
      */
-    private static void SavePhotoSets()
+    private void SavePhotoSets()
     {
-        //if (photoSetFile.exists())
         if (fileManager.GetPhotoSetDataFile().exists())
         {
             try
             {
-                //FileOutputStream fOut = new FileOutputStream(photoSetFile);
                 FileOutputStream fOut = new FileOutputStream(fileManager.GetPhotoSetDataFile());
 
                 OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fOut);
@@ -288,45 +229,70 @@ public class PhotoSetManager
      */
     private void AddToPhotoSets(String line)
     {
-        // TODO set photoset index (str[0])
-        String[] str = line.split(",", -1);
-
-        String[] date = str[1].split("\\.", -1);
-
-        PhotoSet ps = new PhotoSet(str[2],
-                                   new Field(str[3], str[4]),
-                                   new GregorianCalendar(Integer.parseInt(date[0]),
-                                                         Integer.parseInt(date[1]),
-                                                         Integer.parseInt(date[2])));
-
-        // add the photos filenames:
-        for (int i = 5; i < str.length; i++) {
-            // todo: also check for converted photos existing.
-            if (fileManager.PhotoExists(str[i]))
-                ps.AddPhoto(str[i]);
-        }
-
-        photoSets.add(ps);
+        photoSets.add(new PhotoSet(line));
     }
 
-    private static String CreateCsvString(int i)
+    /**
+     * Create a CSV string from a photo set.
+     * @param i The index of the photoset in the array list.
+     * @return CSV string containing photo set data.
+     */
+    private String CreateCsvString(int i)
     {
         String line = "";
 
         if (i < photoSets.size()) {
             PhotoSet ps = photoSets.get(i);
 
-            line += ps.GetPhotoSetIndex() + ",";
+            line += ps.GetPhotoSetID() + ",";
             line += ps.GetDateTaken().toString() + ",";
             line += ps.GetBugType() + ",";
             line += ps.GetField().name() + ",";
             line += ps.GetField().GetCropType();
 
             for (int j = 0; j < ps.GetPhotoCount(); j++)
-                line += "," + ps.GetPhoto(j);   // add the filename of each photo.
+                line += "," + ps.GetPhoto(j).GetPhotoName();   // add the filename of each photo.
         }
 
         return line;
+    }
+
+    /**
+     * Removes the CSV line from the photosets.txt file and saves the updated file.
+     * @param id the ID of the photoset to remove.
+     */
+    private void RemovePhotoSetAndSave(String id)
+    {
+        File tempFile = new File(fileManager.GetPhotoSetDirectory() + File.separator + "temp.txt");
+
+        if (fileManager.GetPhotoSetDataFile().exists())
+        {
+            try
+            {
+                FileInputStream fIn = new FileInputStream(fileManager.GetPhotoSetDataFile());
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(fIn));
+                BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+
+                String line;
+
+                while ((line = reader.readLine()) != null)
+                {
+                    String[] splitLine = line.split(",", -1);
+
+                    // If the ID doesn't equal the ID of the index to remove, then write it.
+                    // If the ID is equal, then that photoset will not be written (deleted).
+                    if (!splitLine[0].equals(id))
+                        writer.write(line + "\r\n");
+                }
+
+                writer.close();
+                reader.close();
+
+                tempFile.renameTo(fileManager.GetPhotoSetDataFile());
+
+            } catch (Exception ex) { ex.printStackTrace(); }
+        }
     }
 
 }

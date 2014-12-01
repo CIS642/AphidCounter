@@ -2,6 +2,8 @@ package cis642.aphidcounter.storage;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +33,11 @@ public class AddField extends Activity implements View.OnClickListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_field_layout);
+
+        setResult(1);
+
+        // Set the event handler for back button clicks.
+        SetBackButtonListener();
 
         mDbHelper = new DatabaseOpenHelper(this);
 
@@ -66,12 +73,29 @@ public class AddField extends Activity implements View.OnClickListener{
     }
 
 
+    /**
+     * Set the event handler for the 'Back' button click.
+     */
+    private void SetBackButtonListener()
+    {
+        Button goBack = (Button) findViewById(R.id.goBackButton);
 
+        goBack.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                finish();
+            }
+
+        });
+    }
 
     public void onClick(View v){
         if(v.getId() == R.id.createFieldButton){
             fieldName = textBox_FieldName.getText().toString();
+            fieldName = fieldName.replaceAll(",", ".");
+
             cropType = spinner_FieldCrop.getSelectedItem().toString();
+            cropType = cropType.replaceAll(",", ".");
+
             ContentValues values = new ContentValues();
             values.put(DatabaseOpenHelper.FIELD_NAME,fieldName);
             values.put(DatabaseOpenHelper.FIELD_CROP,cropType);

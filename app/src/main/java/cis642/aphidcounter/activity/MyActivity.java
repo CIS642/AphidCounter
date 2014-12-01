@@ -20,11 +20,19 @@ import cis642.aphidcounter.PhotoSet;
 import cis642.aphidcounter.R;
 import cis642.aphidcounter.ViewHistory;
 import cis642.aphidcounter.entity.Field;
+import cis642.aphidcounter.manager.PhotoSetManager;
 import cis642.aphidcounter.storage.AddField;
 import cis642.aphidcounter.storage.SelectField;
 
 
 public class MyActivity extends Activity {
+
+    /**
+     * A list of photosets.
+     */
+    //private ArrayList<PhotoSet> photoSets = new ArrayList<PhotoSet>();
+    private static PhotoSetManager psManager = PhotoSetManager.GetInstance();
+
     public ArrayList<Field> listOfFields = new ArrayList<Field>();
     public ArrayList<PhotoSet> listOfPhotoSets = new ArrayList<PhotoSet>();
     private String fileName = "MyFields.txt";
@@ -48,6 +56,7 @@ public class MyActivity extends Activity {
 
         });
 
+/*
         //AddField button binding
         Button addFieldScreen = (Button) findViewById(R.id.addFieldButton);
         addFieldScreen.setOnClickListener(new OnClickListener() {
@@ -67,7 +76,7 @@ public class MyActivity extends Activity {
                startActivityForResult(myIntent, 0);
            }
         });
-
+*/
         //ViewHistory button binding
         Button viewHistory = (Button) findViewById(R.id.btnViewHistory);
         viewHistory.setOnClickListener(new View.OnClickListener() {
