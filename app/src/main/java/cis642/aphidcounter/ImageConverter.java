@@ -77,8 +77,8 @@ public class ImageConverter {
         return grayScaleImage;
     }*/
 
-    private final double bgStrelConst_width = 0.01;
-    private final double bgStrelConst_height = 0.01;
+    private final double bgStrelConst_width = 0.02;
+    private final double bgStrelConst_height = 0.02;
     public void ConvertImage() {
         //converts the image  to grayscale
         int bgStrel_width = (int) Math.round(source.width() * bgStrelConst_width);
@@ -113,7 +113,7 @@ public class ImageConverter {
 /**/
 
 
-        //Imgproc.medianBlur(convertedImage, convertedImage, 3);
+        Imgproc.medianBlur(convertedImage, convertedImage, 3);
         //something
         //Log.i("Displaying Mat", convertedImage.);
         //ty to blur out the fine details fo creating the bg.
