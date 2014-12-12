@@ -102,7 +102,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             Bitmap bmConvertedImage = Bitmap.createBitmap(convertedImage.cols(),
                     convertedImage.rows(),
                     Bitmap.Config.ARGB_8888);
-            aphidCounter = new AphidCounter(convertedImage);
+            aphidCounter = new AphidCounter(convertedImage.clone());
             Log.i("Average AphidCount: ", Integer.toString(aphidCounter.countAphid()));
             Utils.matToBitmap(convertedImage, bmConvertedImage);    // Convert the Mat to bitmap
 

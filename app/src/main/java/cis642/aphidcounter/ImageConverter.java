@@ -83,64 +83,39 @@ public class ImageConverter {
     private final double bgStrelConst_width = 0.02;
     private final double bgStrelConst_height = 0.02;
     public void ConvertImage() {
-        //converts the image  to grayscale
+        //Getting image variables to be used with respect to image size used.
         int width = source.width();
         int height = source.height();
         int bgStrel_width = (int) Math.round(width * bgStrelConst_width);
-        int bgStrel_height = (int) Math.round(height * bgStrelConst_width);
-        Log.i("Process Trace","begining grayscale conversion");
+        int bgStrel_height = (int) Math.round(height * bgStrelConst_height);
+
+
+        //converts the image to grayscale
+        Log.i("Process Trace", "begining grayscale conversion");
         Imgproc.cvtColor(source, convertedImage, Imgproc.COLOR_RGB2GRAY);
         Log.i("Process Trace","done with grayscale conversion");
 
 
         //adjust the image intensity/contrast
         Log.i("Process Trace","begining image intensity/contrast adjustment");
-        //Imgproc.equalizeHist(convertedImage,convertedImage);
-        convertedImage.convertTo(convertedImage, -1, 1.5, -100.0);
+        convertedImage.convertTo(convertedImage, -1, 1.0, -100.0);
         Log.i("Process Trace","done with image intensity/contrast adjustment");
-
         //Removing Background
         //Creating background Strel
-        Mat background = convertedImage.clone();
-        Imgproc.medianBlur(background, background, 39);
-        Log.i("Process Trace","begining to create backgroundStrel");
-        Log.i("Process Trace","backgroundStrel created");
-        Log.i("Process Trace","Eroding convertedImage against backgroundStrel");
-        Imgproc.threshold(background,background,90,110,Imgproc.THRESH_BINARY);
-        Imgproc.erode(background,background,Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(bgStrel_width,bgStrel_height)));
-        Log.i("Process Trace","Final Background created");
-        Log.i("Process Trace","begining to subtract background from image");
-        Core.absdiff(convertedImage,background,convertedImage);
-        Log.i("Process Trace","Background removed");
-
-        //Imgproc.equalizeHist(convertedImage,convertedImage);// correction before applying filters
-
-/**/
+        Mat imageBg = convertedImage.clone();
+        Imgproc.medianBlur(imageBg, imageBg, 21);//blur out aphids in bg
+        //Imgproc.threshold(imageBg,imageBg,90,110,Imgproc.THRESH_BINARY);
+        // Imgproc.erode(imageBg,imageBg,Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(bgStrel_width,bgStrel_height)));
 
 
-        Imgproc.medianBlur(convertedImage, convertedImage, 3);
-        //something
-        //Log.i("Displaying Mat", convertedImage.);
-        //ty to blur out the fine details fo creating the bg.
-        //this will make a better mask for removing the bg
-       //Mat bg = new Mat();
-        //Imgproc.threshold(convertedImage,bg,90,110,Imgproc.THRESH_BINARY);
-        //Core.absdiff(convertedImage,bg,convertedImage);
+        Core.absdiff(convertedImage, imageBg, convertedImage);
+        //dont use equalize find alternative for fixing contrast
 
-        //Removing Background and Noise
+        //convertedImage.convertTo(convertedImage,-1,1.0, -100);
 
+        Mat round = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_ELLIPSE, new Size(4,4));
+        Imgproc.dilate(convertedImage,convertedImage,round);
 
-        //Initial Contrast enhancement
-        //Imgproc.equalizeHist(convertedImage,convertedImage);
-
-        //mockProcess: assuming bg and noise are removed
-        Mat octagon = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_CROSS, new Size((int)(width*.008),(int)(height*.0075)));
-        Imgproc.dilate(convertedImage,convertedImage,octagon);
-        //Imgproc.floodFill(convertedImage,convertedImage,new Point(0,0),new Scalar(255,255,255));
-        Imgproc.medianBlur(convertedImage,convertedImage,7);
-        //Imgproc.equalizeHist(convertedImage,convertedImage);
-        //Imgproc.floodFill(convertedImage,convertedImage,new Point(0,0),new Scalar(255,255,255))
     }
-    private final List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 
 }
