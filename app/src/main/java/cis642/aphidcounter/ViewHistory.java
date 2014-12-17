@@ -1,8 +1,8 @@
 package cis642.aphidcounter;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -11,27 +11,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
-import cis642.aphidcounter.entity.Field;
 import cis642.aphidcounter.manager.PhotoSetManager;
 
 /**
  * This class creates the UI for viewing all of the photo sets that have been previously taken.
  */
-public class ViewHistory extends ActionBarActivity {
+public class ViewHistory extends Activity {
 
     /**
      * A list of photosets.

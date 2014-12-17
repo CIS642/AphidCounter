@@ -29,26 +29,6 @@
         android:layout_height="80dp"
         />
 
-<!--
-    <Button
-        style="@style/ButtonsStyle"
-        android:id="@+id/addFieldButton"
-        android:text="Add New Field"
-        android:clickable="true"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        />
-
-    <Button
-        style="@style/ButtonsStyle"
-        android:id="@+id/selectField"
-        android:text="Select Working Field"
-        android:clickable="true"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        />
--->
-
     <Button
         style="@style/ButtonsStyle"
         android:id="@+id/btnViewHistory"
@@ -60,14 +40,23 @@
 
     <Button
         style="@style/ButtonsStyle"
-        android:id="@+id/btnConversionTest"
+        android:id="@+id/btnConvert"
         android:text="Convert Photos"
         android:clickable="true"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         />
 
-
+    <!--
+    <Button
+        style="@style/ButtonsStyle"
+        android:id="@+id/btnConversionTest"
+        android:text="Conversion Test"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        />
+    -->
     <!-- <Button
         android:layout_width="200dp"
         android:layout_height="40dp"

@@ -151,6 +151,7 @@ public class MyActivity extends Activity {
             }
         });
 
+        /*
         Button conversionTest = (Button) findViewById(R.id.btnConversionTest);
         conversionTest.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -158,6 +159,7 @@ public class MyActivity extends Activity {
                 startActivityForResult(myIntent, 0);
             }
         });
+        */
 /*
         Button next = (Button) findViewById(R.id.addPhotos);
         next.setOnClickListener(new View.OnClickListener() {

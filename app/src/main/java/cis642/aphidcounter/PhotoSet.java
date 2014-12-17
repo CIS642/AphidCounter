@@ -1,12 +1,7 @@
 package cis642.aphidcounter;
 
-import android.graphics.Bitmap;
-
-import org.opencv.core.Mat;
-
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.text.DateFormatSymbols;
 
@@ -102,7 +97,7 @@ public class PhotoSet implements Serializable {
         // add the converted photos:
         for (int j = startIndexOfConvertedPhoto; j < str.length; j++)
         {
-            if (fileManager.PhotoExists(str[j]))
+            if (fileManager.ConvertedPhotoExists(str[j]))
                 convertedPhotos.add(new AphidPhoto(str[j], this.field, this.dateTaken));
         }
 

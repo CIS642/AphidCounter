@@ -6,6 +6,7 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:allowBackup="true"
@@ -15,7 +16,9 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".activity.MyActivity"
-            android:label="@string/app_name" >
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,68 +27,94 @@
         </activity>
         <activity
             android:name=".activity.TakePhotos"
+            android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_take_photo"
-            android:parentActivityName=".activity.MyActivity" >
+            android:parentActivityName=".activity.MyActivity"
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cis642.aphidcounter.activity.MyActivity" />
         </activity>
         <activity
             android:name=".CapturePhoto"
+            android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_capture_photo"
-            android:parentActivityName=".activity.MyActivity" >
+            android:parentActivityName=".activity.MyActivity"
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cis642.aphidcounter.activity.MyActivity" />
         </activity>
         <activity
             android:name=".ViewHistory"
+            android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_view_history"
-            android:parentActivityName=".activity.MyActivity" >
+            android:parentActivityName=".activity.MyActivity"
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cis642.aphidcounter.activity.MyActivity" />
         </activity>
         <activity
             android:name=".ViewPhotoSet"
+            android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_view_photo_set"
             android:launchMode="singleTop"
-            android:parentActivityName=".ViewHistory" >
+            android:parentActivityName=".ViewHistory"
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cis642.aphidcounter.ViewHistory" />
         </activity>
         <activity
             android:name=".storage.AddField"
+            android:configChanges="orientation|keyboardHidden"
             android:label="@string/addField_label"
-            android:parentActivityName=".activity.MyActivity" >
+            android:parentActivityName=".activity.MyActivity"
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cis642.aphidcounter.activity.MyActivity" />
         </activity>
         <activity
             android:name=".storage.SelectField"
+            android:configChanges="orientation|keyboardHidden"
             android:label="@string/selectField_label"
-            android:parentActivityName=".storage.AddField" >
+            android:parentActivityName=".storage.AddField"
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cis642.aphidcounter.AddField" />
         </activity>
         <activity
             android:name=".MainActivity"
+            android:configChanges="orientation|keyboardHidden"
             android:label="Conversion Test"
-            android:parentActivityName=".activity.MyActivity" >
+            android:parentActivityName=".activity.MyActivity"
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cis642.aphidcounter.activity.MyActivity" />
         </activity>
         <activity
             android:name=".activity.ViewPhotos"
+            android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_view_photos"
-            android:parentActivityName=".ViewPhotoSet" >
+            android:parentActivityName=".ViewPhotoSet"
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cis642.aphidcounter.ViewPhotoSet" />
+        </activity>
+        <activity
+            android:name=".activity.ConvertPhotos"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="Convert Photos"
+            android:parentActivityName=".activity.MyActivity"
+            android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="cis642.aphidcounter.activity.MyActivity" />
         </activity>
     </application>
 
