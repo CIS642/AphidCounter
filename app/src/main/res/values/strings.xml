@@ -44,5 +44,6 @@
     <string name="title_activity_capture_photo">Capture Photo</string>
     <string name="title_activity_take_photo">Take Photo</string>
     <string name="title_activity_view_photos">ViewPhotos</string>
+    <string name="title_activity_convert_photos">ConvertPhotos</string>
 
 </resources>

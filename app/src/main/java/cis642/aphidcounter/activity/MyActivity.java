@@ -12,17 +12,14 @@ import android.widget.Button;
 
 import org.opencv.android.OpenCVLoader;
 
-import java.util.ArrayList;
-
-
 import cis642.aphidcounter.MainActivity;
-import cis642.aphidcounter.PhotoSet;
 import cis642.aphidcounter.R;
 import cis642.aphidcounter.ViewHistory;
-import cis642.aphidcounter.entity.Field;
-import cis642.aphidcounter.manager.PhotoSetManager;
-import cis642.aphidcounter.storage.AddField;
-import cis642.aphidcounter.storage.SelectField;
+
+//import cis642.aphidcounter.entity.Field;
+//import cis642.aphidcounter.manager.PhotoSetManager;
+//import cis642.aphidcounter.storage.AddField;
+//import cis642.aphidcounter.storage.SelectField;
 
 
 public class MyActivity extends Activity {
@@ -31,12 +28,14 @@ public class MyActivity extends Activity {
      * A list of photosets.
      */
     //private ArrayList<PhotoSet> photoSets = new ArrayList<PhotoSet>();
+/*
     private static PhotoSetManager psManager = PhotoSetManager.GetInstance();
 
     public ArrayList<Field> listOfFields = new ArrayList<Field>();
     public ArrayList<PhotoSet> listOfPhotoSets = new ArrayList<PhotoSet>();
     private String fileName = "MyFields.txt";
     private String filePath = "MyFileStorage";
+*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,97 +45,16 @@ public class MyActivity extends Activity {
         }
         setContentView(R.layout.activity_my);
 
-        //TakePhotos button binding
-        Button takePhotos = (Button) findViewById(R.id.takePhotos);
-        takePhotos.setOnClickListener(new OnClickListener() {
-            public void onClick(View view) {
-                Intent myIntent = new Intent(view.getContext(), TakePhotos.class);
-                startActivityForResult(myIntent, 0);
-            }
+        // Set event handlers for the buttons:
+        SetTakePhotosButtonListener();
 
-        });
+        SetViewPhotoSetsButtonListener();
 
-/*
-        //AddField button binding
-        Button addFieldScreen = (Button) findViewById(R.id.addFieldButton);
-        addFieldScreen.setOnClickListener(new OnClickListener() {
-            public void onClick(View view) {
-                Intent myIntent = new Intent(view.getContext(), AddField.class);
-                startActivityForResult(myIntent, 0);
-            }
+        SetConvertPhotosButtonListener();
 
-        });
+        //SetConversionTestButtonListener();
 
-        //SelectField button binding
-        Button selectFieldScreen = (Button) findViewById(R.id.selectField);
-        selectFieldScreen.setOnClickListener(new OnClickListener() {
-           public void onClick(View view) {
-               Intent myIntent = new Intent(view.getContext(), SelectField.class);
-               //myIntent.putExtra("newFields", listOfFields);
-               startActivityForResult(myIntent, 0);
-           }
-        });
-*/
-        //ViewHistory button binding
-        Button viewHistory = (Button) findViewById(R.id.btnViewHistory);
-        viewHistory.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                Intent myIntent = new Intent(view.getContext(), ViewHistory.class);
-                startActivityForResult(myIntent, 0);
-            }
-        });
-
-        //ConversionTest button binding
-        Button conversionTest = (Button) findViewById(R.id.btnConversionTest);
-        conversionTest.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                Intent myIntent = new Intent(view.getContext(), MainActivity.class);
-                startActivityForResult(myIntent, 0);
-            }
-        });
-        /*
-        Button next = (Button) findViewById(R.id.addPhotos);
-        next.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                Intent myIntent = new Intent(view.getContext(), TakePhotos.class);
-                startActivityForResult(myIntent, 0);
-            }
-
-        });
-
-        Button examineScreen = (Button) findViewById(R.id.examineButton);
-        examineScreen.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                Intent examinePhotosIntent = new Intent(view.getContext(), ExaminePhotosScreen.class);
-                startActivityForResult(examinePhotosIntent, 0);
-            }
-        });
-
-        Button helpScreen = (Button) findViewById(R.id.helpButton);
-        helpScreen.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                Intent helpIntent = new Intent(view.getContext(), HelpScreen.class);
-                startActivityForResult(helpIntent, 1);
-            }
-
-        });
-        Button instructionScreen = (Button) findViewById(R.id.instructionScreenButton);
-        instructionScreen.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                Intent instructionIntent = new Intent(view.getContext(), InstructionScreen.class);
-                startActivityForResult(instructionIntent, 0);
-            }
-        });
-
-        Button aboutScreen = (Button) findViewById(R.id.aboutButton);
-        aboutScreen.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                Intent aboutIntent = new Intent(view.getContext(), AboutScreen.class);
-                startActivityForResult(aboutIntent, 0);
-            }
-        });*/
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -157,23 +75,63 @@ public class MyActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void takePhotos(View view) {
-        Intent myIntent = new Intent(view.getContext(), TakePhotos.class);
-        startActivityForResult(myIntent, 0);
-        /*//define the file-name to save photo taken by Camera activity
-        String fileName = "new-photo-name.jpg";
-        //create parameters for Intent with filename
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.TITLE, fileName);
-        values.put(MediaStore.Images.Media.DESCRIPTION,"Image capture by camera");
-        //imageUri is the current activity attribute, define and save it for later usage (also in onSaveInstanceState)
-        imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        //create new Intent
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
-        startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);*/
+    /**
+     * Event handler for the Take Photos button press.
+     */
+    private void SetTakePhotosButtonListener()
+    {
+        Button takePhotos = (Button) findViewById(R.id.takePhotos);
+        takePhotos.setOnClickListener(new OnClickListener() {
+            public void onClick(View view) {
+                Intent myIntent = new Intent(view.getContext(), TakePhotos.class);
+                startActivityForResult(myIntent, 0);
+            }
+
+        });
     }
+
+    /**
+     * Event handler for the View Photo Sets button press.
+     */
+    private void SetViewPhotoSetsButtonListener()
+    {
+        Button viewHistory = (Button) findViewById(R.id.btnViewHistory);
+        viewHistory.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent myIntent = new Intent(view.getContext(), ViewHistory.class);
+                startActivityForResult(myIntent, 0);
+            }
+        });
+    }
+
+    /**
+     * Event handler for the Convert Photos button press.
+     */
+    private void SetConvertPhotosButtonListener()
+    {
+        Button convertPhotos = (Button) findViewById(R.id.btnConvert);
+        convertPhotos.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent myIntent = new Intent(view.getContext(), ConvertPhotos.class);
+                startActivityForResult(myIntent, 0);
+            }
+        });
+    }
+
+    /**
+     * Event handler for the Conversion Test button press.
+     */
+/*    private void SetConversionTestButtonListener()
+    {
+        Button conversionTest = (Button) findViewById(R.id.btnConversionTest);
+        conversionTest.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent myIntent = new Intent(view.getContext(), MainActivity.class);
+                startActivityForResult(myIntent, 0);
+            }
+        });
+    }
+*/
 }
 
 

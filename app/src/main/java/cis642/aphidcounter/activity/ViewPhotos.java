@@ -1,6 +1,6 @@
 package cis642.aphidcounter.activity;
 
-import android.content.Intent;
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.ActionBarActivity;
@@ -18,12 +18,14 @@ import java.io.File;
 import cis642.aphidcounter.PhotoSet;
 import cis642.aphidcounter.R;
 import cis642.aphidcounter.manager.FileManager;
+import cis642.aphidcounter.manager.PhotoManager;
 import cis642.aphidcounter.manager.PhotoSetManager;
 
-public class ViewPhotos extends ActionBarActivity {
+public class ViewPhotos extends Activity {
 
     private FileManager fileManager = new FileManager();
     private PhotoSetManager psManager = PhotoSetManager.GetInstance();
+    private PhotoManager photoManager = PhotoManager.GetInstance();
     private String photoSetID;
     private PhotoSet photoSet;
 
@@ -88,40 +90,42 @@ public class ViewPhotos extends ActionBarActivity {
         {
             for (int i = 0; i < photoSet.GetPhotoCount(); i++)
             {
-                if (fileManager.PhotoExists(photoSet.GetPhoto(i).GetPhotoName()))
+                if (photoSet.GetPhoto(i) != null)
                 {
-                    // Create a new linear layout that will contain the photo and information below it:
-                    LinearLayout picAndInfo = new LinearLayout(this);
-                    picAndInfo.setOrientation(LinearLayout.VERTICAL);
-
-                    // Create an image view which will hold a resized image for display:
-                    ImageView iv = new ImageView(this);
-
-                    // Get the path to a particular image at the ith index of the original photos photoset:
-                    String imgPath = fileManager.GetPhotosDirectory().toString() + File.separator.toString() + photoSet.GetPhoto(i).GetPhotoName();
-
-                    try
+                    if (fileManager.PhotoExists(photoSet.GetPhoto(i).GetPhotoName()))
                     {
-                        // get the image:
-                        Bitmap myBitmap = BitmapFactory.decodeFile(imgPath);
+                        // Create a new linear layout that will contain the photo and information below it:
+                        LinearLayout picAndInfo = new LinearLayout(this);
+                        picAndInfo.setOrientation(LinearLayout.VERTICAL);
 
-                        // get a resized version of the image for display:
-                        iv.setImageBitmap(Bitmap.createScaledBitmap(myBitmap, 240, 320, false));
+                        // Create an image view which will hold a resized image for display:
+                        ImageView iv = new ImageView(this);
 
-                        iv.setPadding(10, 10, 10, 10);
-                        // Add the resized image to the view:
-                        picAndInfo.addView(iv);
+                        // Get the path to a particular image at the ith index of the original photos photoset:
+                        String imgPath = fileManager.GetPhotosDirectory().toString() + File.separator.toString() + photoSet.GetPhoto(i).GetPhotoName();
 
-                        // Set the text that will appear below the image:
-                        SetTextBelowImage(i, picAndInfo, "original");
+                        try {
+                            // get the image:
+                            Bitmap myBitmap = BitmapFactory.decodeFile(imgPath);
 
-                        // Add the photo and text to the main view:
-                        gallery.addView(picAndInfo);
+                            // get a resized version of the image for display:
+                            iv.setImageBitmap(Bitmap.createScaledBitmap(myBitmap, 240, 320, false));
 
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
+                            iv.setPadding(10, 10, 10, 10);
+                            // Add the resized image to the view:
+                            picAndInfo.addView(iv);
+
+                            // Set the text that will appear below the image:
+                            SetTextBelowImage(i, picAndInfo, "original");
+
+                            // Add the photo and text to the main view:
+                            gallery.addView(picAndInfo);
+
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+
                     }
-
                 }
             }
         }
@@ -174,7 +178,8 @@ public class ViewPhotos extends ActionBarActivity {
         picAndInfo.addView(tv);
 
         tv = new TextView(this);
-        tv.setText("Aphid Count: " + 0);
+        if (photoType.equals("original")){ tv.setText("Aphid Count: " + photoManager.GetAphidCount(photoSet.GetPhoto(i).GetPhotoName())); }
+        else { tv.setText("Aphid Count: " + photoManager.GetAphidCount(photoSet.GetConvertedPhoto(i).GetPhotoName().split("_", -1)[1])); }
         tv.setTextSize(12);
         tv.setPadding(10, 0, 0, 0);
         picAndInfo.addView(tv);
@@ -189,7 +194,7 @@ public class ViewPhotos extends ActionBarActivity {
     {
         for (int i = 0; i < photoSet.GetConvertedPhotoCount(); i++)
         {
-            if (!photoSet.GetConvertedPhoto(i).equals(""))
+            if (photoSet.GetConvertedPhoto(i) != null)
             {
 
                 if (fileManager.ConvertedPhotoExists(photoSet.GetConvertedPhoto(i).GetPhotoName()))

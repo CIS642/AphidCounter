@@ -1,32 +1,32 @@
 package cis642.aphidcounter;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 import cis642.aphidcounter.activity.ViewPhotos;
+import cis642.aphidcounter.manager.PhotoManager;
 import cis642.aphidcounter.manager.PhotoSetManager;
 
 
 /**
  * This class creates the UI for viewing a particular photo set.
  */
-public class ViewPhotoSet extends ActionBarActivity {
+public class ViewPhotoSet extends Activity {
 
     private String photoSetIndex;
     private PhotoSet photoSet;
+    private int aphidCount;
+    private PhotoManager photoManager;
 
     /**
      * A list of photosets.
@@ -42,6 +42,8 @@ public class ViewPhotoSet extends ActionBarActivity {
         // Get the photoset that was passed to this intent:
         photoSetIndex = (String) getIntent().getSerializableExtra("PhotoSet");
         photoSet = psManager.Get(Integer.parseInt(photoSetIndex));
+        aphidCount = 0;
+        photoManager = PhotoManager.GetInstance();
 
         // Set the event handler for the go back button press:
         SetBackButtonListener();
@@ -101,29 +103,8 @@ public class ViewPhotoSet extends ActionBarActivity {
         cropType.setText("Crop Type:   " + photoSet.GetField().GetCropType());
         dateTaken.setText("Date Taken:   " + photoSet.GetDateTaken());
         photoCount.setText("Photo Count:   " + photoSet.GetPhotoCount());
-        avgBugCount.setText("Average Bug Count:   "); // TODO
+        avgBugCount.setText("Average Bug Count:   " + CalculateAphidAverage());
 
-    }
-
-    /**
-     * Sets the layout for the text view.
-     * @param tv The text view.
-     * @param centered Where to center the text.
-     * @param marginLeft Left margin.
-     * @param marginTop Top margin.
-     * @param marginRight Right margin.
-     * @param marginBottom Bottom margin.
-     */
-    private void SetTextLayout(TextView tv, int centered, int marginLeft, int marginTop,
-                               int marginRight, int marginBottom) {
-
-        RelativeLayout.LayoutParams textLayoutParameters =
-                new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-                        RelativeLayout.LayoutParams.WRAP_CONTENT);
-
-        textLayoutParameters.setMargins(marginLeft, marginTop, marginRight, marginBottom);
-
-        tv.setLayoutParams(textLayoutParameters);
     }
 
     /**
@@ -168,7 +149,7 @@ public class ViewPhotoSet extends ActionBarActivity {
         viewConvertedPhotos.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent myIntent = new Intent(view.getContext(), ViewPhotos.class);
-                myIntent.putExtra("photoSetID", photoSetIndex);
+                myIntent.putExtra("photoSetID", photoSet.GetPhotoSetID());
                 myIntent.putExtra("photoType", "converted");
                 startActivityForResult(myIntent, 0);
             }
@@ -214,6 +195,39 @@ public class ViewPhotoSet extends ActionBarActivity {
                 });
 
         alertBuilder.create().show();
+    }
+
+    /**
+     * Calculates the average aphid count for this photoset.
+     * @return
+     */
+    private int CalculateAphidAverage()
+    {
+        int aphidCount = 0, totalPhotos = 0;
+        String psID = photoSet.GetPhotoSetID();
+
+        // Loop through each line that is in Photos.txt
+        for (int i = 0; i < photoManager.GetPhotoCount(); i++)
+        {
+            try {
+                String[] photoInfo = photoManager.GetPhotoInfo(i).split(",", -1);
+
+                // If the info in this line correlates to this photo set's ID, get the aphid count
+                if (photoInfo[photoManager.ORIGINAL_PHOTO].split("-", -1)[0].equals(psID)) {
+
+                    if (!photoInfo[photoManager.CONVERTED_PHOTO].equals(photoManager.NOT_CONVERTED)) {
+                        aphidCount += Integer.parseInt(photoInfo[photoManager.APHID_COUNT]);
+                        totalPhotos++;
+                    }
+
+                }
+            } catch (Exception ex) { ex.printStackTrace(); } // error reading photo info from photos.txt
+
+        }
+
+        if (totalPhotos == 0)
+            return 0;
+        return aphidCount / totalPhotos;
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data)

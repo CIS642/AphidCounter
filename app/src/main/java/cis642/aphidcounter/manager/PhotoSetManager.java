@@ -9,16 +9,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 
 import cis642.aphidcounter.PhotoSet;
-import cis642.aphidcounter.entity.Field;
 
 /**
  * Created by Staton on 11/13/2014.
@@ -252,6 +247,9 @@ public class PhotoSetManager
 
             for (int j = 0; j < ps.GetPhotoCount(); j++)
                 line += "," + ps.GetPhoto(j).GetPhotoName();   // add the filename of each photo.
+
+            for (int k = 0; k < ps.GetConvertedPhotoCount(); k++)
+                line += "," + ps.GetConvertedPhoto(k).GetPhotoName(); // add filename of each converted photo.
         }
 
         return line;

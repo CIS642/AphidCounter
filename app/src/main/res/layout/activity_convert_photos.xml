@@ -1,0 +1,66 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="cis642.aphidcounter.activity.ConvertPhotos">
+
+    <Button
+        style="@style/GreenButtonStyle"
+        android:id="@+id/goBackButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="&lt; Home"
+        android:textStyle="bold"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        />
+
+    <TextView
+        android:id="@+id/numberOfUnconvertedLeft"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Total number of photos converted: 0/0"
+        android:textSize="16dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginBottom="48dp"
+        />
+
+    <Button
+        android:id="@+id/startConvertingButton"
+        style="@style/GreenButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:text="START CONVERTING"
+        android:textStyle="bold"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        />
+
+    <Button
+        android:id="@+id/stopConvertingButton"
+        style="@style/RedButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:text="STOP CONVERTING"
+        android:textStyle="bold"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:visibility="invisible"
+        />
+
+
+
+
+
+</LinearLayout>

@@ -18,12 +18,12 @@ public class PhotoManager
     /**
      * Column indices for the CSV file.
      */
-    private final int ORIGINAL_PHOTO = 0, CONVERTED_PHOTO = 1, DATE_TAKEN = 2, FIELD_NAME = 3, CROP_TYPE = 4, BUG_TYPE = 5, APHID_COUNT = 6;
+    public final int ORIGINAL_PHOTO = 0, CONVERTED_PHOTO = 1, DATE_TAKEN = 2, FIELD_NAME = 3, CROP_TYPE = 4, BUG_TYPE = 5, APHID_COUNT = 6;
 
     /**
      * Column names for the CSV file.
      */
-    private final String CSV_COL_NAMES = "originalphoto,convertedphoto,date,field,crop,bug,aphidcount";
+    public final String CSV_COL_NAMES = "originalphoto,convertedphoto,date,field,crop,bug,aphidcount", NOT_CONVERTED = "notconverted";
 
     /**
      * The single instance of this class.
@@ -46,6 +46,11 @@ public class PhotoManager
     private File photostxt;
 
     /**
+     * Get the number of converted photos.
+     */
+    private int convertedPhotoCount;
+
+    /**
      * Constructs a new photo manager object.
      */
     private PhotoManager()
@@ -53,6 +58,7 @@ public class PhotoManager
         photoList = new ArrayList<String>();
         fileManager = new FileManager();
         photostxt = fileManager.GetPhotosDataFile(); //new File(fileManager.GetPhotoSetDirectory() + File.separator + fileManager.GetPhotosDataFile());
+        convertedPhotoCount = 0;
 
         LoadPhotosFromFile();
     }
@@ -67,6 +73,59 @@ public class PhotoManager
             instance = new PhotoManager();
         return instance;
     }
+
+    public String GetPhotoInfo(int i)
+    {
+        if (i < photoList.size())
+            return photoList.get(i);
+        return null;
+    }
+
+    /**
+     * Get the aphid count of a specific photo.
+     * @param originalPhotoName The name of the photo file.
+     * @return
+     */
+    public int GetAphidCount(String originalPhotoName)
+    {
+        for (int i = 0; i < photoList.size(); i++)
+        {
+            String[] info = photoList.get(i).split(",", -1);
+            if (info[ORIGINAL_PHOTO].equals(originalPhotoName))
+                return Integer.parseInt(info[APHID_COUNT]);
+        }
+        return 0;
+    }
+
+    public void SetConvertedInfo(int i, String filename, int aphidCount)
+    {
+        if (i < photoList.size())
+        {
+            String[] str = photoList.get(i).split(",", -1);
+            str[CONVERTED_PHOTO] = filename;
+            str[APHID_COUNT] = Integer.toString(aphidCount);
+
+            photoList.set(i, str[ORIGINAL_PHOTO] + "," + str[CONVERTED_PHOTO] + "," + str[DATE_TAKEN] + "," + str[FIELD_NAME] + "," + str[CROP_TYPE] + "," + str[BUG_TYPE] + "," + str[APHID_COUNT]);
+            convertedPhotoCount++;
+        }
+
+        SaveListToFile();
+    }
+
+    /**
+     * Get the number of photos.
+     * @return
+     */
+    public int GetPhotoCount()
+    {
+        return photoList.size();
+    }
+
+    /**
+     * Get the count of converted photos.
+     * @return
+     */
+    public int GetConvertedPhotoCount() {return convertedPhotoCount; }
 
     /**
      * Add new photo data to the list.
@@ -92,19 +151,19 @@ public class PhotoManager
         for (int i = 0; i < photoList.size(); i++)
         {
             // Read the CSV line from the photolist & store it in array by splitting it up.
-            String[] line = photoList.get(i).split(",", -1);
+            String[] str = photoList.get(i).split(",", -1);
 
-            if (originalName.equals(line[ORIGINAL_PHOTO]))
+            if (originalName.equals(str[ORIGINAL_PHOTO]))
             {
                 try
                 {
                     // Change the CSV cell to the converted file name.
-                    line[CONVERTED_PHOTO] = photoFileName;
+                    str[CONVERTED_PHOTO] = photoFileName;
                     // Change this CSV cell to the aphid count.
-                    line[APHID_COUNT] = Integer.toString(aphidCount);
+                    str[APHID_COUNT] = Integer.toString(aphidCount);
 
                     // Insert the updated line into the photo list.
-                    photoList.set(i, Arrays.toString(line));
+                    photoList.set(i, str[ORIGINAL_PHOTO] + "," + str[CONVERTED_PHOTO] + "," + str[DATE_TAKEN] + "," + str[FIELD_NAME] + "," + str[CROP_TYPE] + "," + str[BUG_TYPE] + "," + str[APHID_COUNT]);
 
                     // Save the photo list to the Photos.txt file.
                     SaveListToFile();
@@ -154,11 +213,15 @@ public class PhotoManager
 
         for (int i = 0; i < photoList.size(); i++)
         {
-            String originalPhoto = photoList.get(i).split(",", -1)[ORIGINAL_PHOTO];
+            String[] str = photoList.get(i).split(",", -1);
+            String originalPhoto = str[ORIGINAL_PHOTO];
             String psID = originalPhoto.split("-", -1)[0];
 
             if (photoSetID.equals(psID))
             {
+                if (!str[CONVERTED_PHOTO].equals(NOT_CONVERTED))
+                    convertedPhotoCount--;
+
                 photoList.remove(i);
                 i--;
                 hasRemoved = true;
@@ -185,6 +248,9 @@ public class PhotoManager
 
                 while ((line = br.readLine()) != null)
                 {
+                    if (!line.split(",", -1)[CONVERTED_PHOTO].equals(NOT_CONVERTED))
+                        convertedPhotoCount++;
+
                     photoList.add(line);
                 }
 

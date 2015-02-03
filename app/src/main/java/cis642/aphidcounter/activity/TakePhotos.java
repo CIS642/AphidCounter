@@ -4,16 +4,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import java.io.File;
-import java.lang.Object;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -21,15 +18,12 @@ import java.util.List;
 import android.view.View;
 import android.content.Intent;
 import android.view.View.OnClickListener;
-import android.app.Activity;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
-import android.content.ContentValues;
 import android.widget.TextView;
 
 import cis642.aphidcounter.AphidPhoto;
@@ -45,11 +39,12 @@ import cis642.aphidcounter.storage.DatabaseOpenHelper;
 /**
  * Created by JacobLPruitt on 9/29/2014.
  */
-public class TakePhotos extends Activity{
+public class TakePhotos extends Activity {
 
     private DatabaseOpenHelper mDbHelper;
     private SimpleCursorAdapter mAdapter;
     private Spinner fieldTypeSpinner;
+    private int fieldItemIndex = 0;
 
     /**
      * A list of photosets.
@@ -335,11 +330,13 @@ public class TakePhotos extends Activity{
                     // Set that as the field for this photo set.
                     photoSet.SetField(field);
                     selectedField = true;
+                    fieldItemIndex = i;
                     EnableTakePhotosButton();
                 }
                 else // blank item is selected so take photos button will be disabled.
                 {
                     selectedField = false;
+                    fieldItemIndex = 0;
                     EnableTakePhotosButton();
                 }
             }
@@ -488,6 +485,32 @@ public class TakePhotos extends Activity{
         {
             takePhotos.setEnabled(false);
         }
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+
+        Cursor c = mDbHelper.getWritableDatabase().query(DatabaseOpenHelper.TABLE_NAME,DatabaseOpenHelper.columns,null,new String[] {},null,null,null);
+        List<String> arraylist = new ArrayList<String>();
+
+        // Initialize array with the option to add a new field.
+        // When this item is clicked, it will launch the Add Field activity.
+        arraylist.add("");
+        arraylist.add(ADD_NEW_FIELD);
+
+        while(c.moveToNext()) {
+            arraylist.add(c.getString(1));
+        }
+
+        dataAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, arraylist);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        fieldTypeSpinner.setAdapter(dataAdapter);
+
+        fieldTypeSpinner.setSelection(fieldItemIndex);
+
     }
 
 }
