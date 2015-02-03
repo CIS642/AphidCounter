@@ -20,6 +20,7 @@ import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.*;
 
 import cis642.aphidcounter.activity.TakePhotos;
+import cis642.aphidcounter.util.AphidCounter;
 
 import static cis642.aphidcounter.R.drawable.ic_launcher;
 
@@ -87,6 +88,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         Mat convertedImage = new Mat();
 
         imageConverter = new ImageConverter();
+        AphidCounter aphidCounter;
 
         try {
             // Load the image resource as a Mat:
@@ -100,7 +102,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             Bitmap bmConvertedImage = Bitmap.createBitmap(convertedImage.cols(),
                     convertedImage.rows(),
                     Bitmap.Config.ARGB_8888);
-
+            aphidCounter = new AphidCounter(convertedImage);
+            Log.i("Average AphidCount: ", Integer.toString(aphidCounter.countAphid()));
             Utils.matToBitmap(convertedImage, bmConvertedImage);    // Convert the Mat to bitmap
 
             // Get the imageview of the pic shown on the app screen:
