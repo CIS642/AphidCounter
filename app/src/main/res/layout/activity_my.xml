@@ -47,6 +47,15 @@
         android:layout_height="80dp"
         />
 
+    <Button
+        style="@style/ButtonsStyle"
+        android:id="@+id/btnEmail"
+        android:text="Send Data File to Email"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        />
+
     <!--
     <Button
         style="@style/ButtonsStyle"

@@ -1,6 +1,7 @@
 package cis642.aphidcounter.activity;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,12 +10,16 @@ import android.view.View;
 import android.content.Intent;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 
 import org.opencv.android.OpenCVLoader;
+
+import java.io.File;
 
 import cis642.aphidcounter.MainActivity;
 import cis642.aphidcounter.R;
 import cis642.aphidcounter.ViewHistory;
+import cis642.aphidcounter.manager.FileManager;
 
 //import cis642.aphidcounter.entity.Field;
 //import cis642.aphidcounter.manager.PhotoSetManager;
@@ -37,6 +42,8 @@ public class MyActivity extends Activity {
     private String filePath = "MyFileStorage";
 */
 
+    private FileManager fileManager = new FileManager();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +58,8 @@ public class MyActivity extends Activity {
         SetViewPhotoSetsButtonListener();
 
         SetConvertPhotosButtonListener();
+
+        SetSendEmailButtonListener();
 
         //SetConversionTestButtonListener();
 
@@ -116,6 +125,46 @@ public class MyActivity extends Activity {
                 startActivityForResult(myIntent, 0);
             }
         });
+    }
+
+    /**
+     * The event handler for the Send Email button press.
+     */
+    private void SetSendEmailButtonListener() {
+        Button sendEmail = (Button) findViewById(R.id.btnEmail);
+        sendEmail.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                sendEmail();
+            }
+        });
+    }
+
+    /**
+     * Sends the CSV data file in an email.
+     */
+    private void sendEmail() {
+        String[] toEmail = { "" };
+        String subject = "Subject of email";
+        String body = "body of email";
+        File file = fileManager.GetPhotosDataFile();
+
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        emailIntent.setType("plain/text");
+
+
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, toEmail);
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        emailIntent.putExtra(Intent.EXTRA_TEXT, body);
+
+        if (file.exists())
+            emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + file));
+
+        try {
+            this.startActivity(Intent.createChooser(emailIntent, "Send email.."));
+            //finish();
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(MyActivity.this, "Error: no email client installed.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
