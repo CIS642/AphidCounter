@@ -9,7 +9,9 @@ import android.widget.ImageView;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.highgui.Highgui;
@@ -17,6 +19,8 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.photo.Photo;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import cis642.aphidcounter.manager.FileManager;
 
@@ -188,17 +192,14 @@ public class ImageConverter {
     }
     public static Mat imadjust(Mat src){
         Mat imadjusted = src.clone();
-        //Imgproc.equalizeHist(src,imadjusted);
-        imadjusted.convertTo(src,-1, 1.5, -100.0);
+        imadjusted.convertTo(imadjusted,-1, 1.5, -100.0);
         return imadjusted;
     }
     public static Mat imopen(Mat src, Mat strel){
         Mat dst = new Mat();
         Imgproc.erode(src,dst,strel);
-        Log.i("IMGconv.imopen","eroded");
         Mat dst2 = new Mat();
-        Imgproc.dilate(dst,dst2,strel);
-        Log.i("IMGconv.imopen","dilated");
+        Imgproc.dilate(dst, dst2, strel);
         return dst2;
     }
     public static Mat imtophat(Mat src,Mat strel){
@@ -209,19 +210,44 @@ public class ImageConverter {
         return topHatted;
     }
     public static Mat imfill(Mat src){
-        Mat floodMask = new Mat();
-        floodMask = src.clone();
-        Imgproc.Canny(src, floodMask, 100, 255);
-        Imgproc.copyMakeBorder(floodMask, floodMask, 1, 1, 1, 1, Imgproc.BORDER_REPLICATE);
-        Mat filled = src.clone();
-        Imgproc.floodFill(filled,floodMask,new Point(1,1), new Scalar(255));
-        return filled;
+        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        Mat heirarchy = new Mat();
+        Imgproc.findContours(src.clone(), contours, heirarchy, Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        Mat edges = new Mat();
+        Imgproc.Canny(src,edges,100,200);
+        Imgproc.copyMakeBorder(edges, edges, 1, 1, 1, 1, Imgproc.BORDER_REPLICATE);
+        for(MatOfPoint matOfPoints: contours){
+            for(Point point: matOfPoints.toList()) {
+                Scalar scalar = new Scalar(src.get((int)point.y,(int)point.x));
+                Imgproc.floodFill(src, edges, point, scalar);
+            }
+        }
+        return src;
+    }
+
+    public static Mat findingCoutours(Mat src) {
+        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        Imgproc.findContours(src, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+        for(int i=0; i< contours.size();i++){
+            System.out.println(Imgproc.contourArea(contours.get(i)));
+            if (Imgproc.contourArea(contours.get(i)) > 50 ){
+                Rect rect = Imgproc.boundingRect(contours.get(i));
+                System.out.println(rect.height);
+                if (rect.height > 28){
+                    Core.rectangle(src, new Point(rect.x,rect.height), new Point(rect.y,rect.width),new Scalar(0,0,255));
+                }
+            }
+        }
+        return src;
     }
     public static Mat findEdges(Mat src){
         Mat mask = new Mat();
-        Imgproc.Canny(src,mask,150,200);
+        Imgproc.Canny(src,mask,100,200);
         return mask;
     }
+
+
     public static Mat octagonStrel(int size){
         Mat octaStrel = new Mat();
         int dim = 1 + (size *2);
@@ -229,6 +255,8 @@ public class ImageConverter {
         octaStrel = rotate(strel);
         return octaStrel;
     }
+
+
     private static Mat rotate(Mat src){
         Point pt = new Point(src.width()/2,src.height()/2);
         Mat r = new Mat();
@@ -237,13 +265,13 @@ public class ImageConverter {
         Imgproc.warpAffine(src,rotatedImage,r,new Size(src.width(),src.height()));
         return rotatedImage;
     }
+
     private static void displayMat(Mat mat){
         for(int i = 0 ; i < mat.width(); i ++){
             String line = "";
             for(int j = 0 ; j < mat.height() ; j ++){
                 line += String.valueOf((int)mat.get(i,j)[0]) + " ";
             }
-            Log.i("",line);
         }
     }
 }
