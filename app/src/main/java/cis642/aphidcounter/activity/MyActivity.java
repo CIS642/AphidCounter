@@ -61,7 +61,7 @@ public class MyActivity extends Activity {
 
         SetSendEmailButtonListener();
 
-        //SetConversionTestButtonListener();
+        SetConversionTestButtonListener();
 
     }
 
@@ -170,7 +170,7 @@ public class MyActivity extends Activity {
     /**
      * Event handler for the Conversion Test button press.
      */
-/*    private void SetConversionTestButtonListener()
+    private void SetConversionTestButtonListener()
     {
         Button conversionTest = (Button) findViewById(R.id.btnConversionTest);
         conversionTest.setOnClickListener(new View.OnClickListener() {
@@ -180,7 +180,7 @@ public class MyActivity extends Activity {
             }
         });
     }
-*/
+
 }
 
 
