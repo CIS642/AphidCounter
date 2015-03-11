@@ -213,19 +213,23 @@ public class ImageConverter {
     }
     public static Mat imfill(Mat src){
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        Mat herarchy = new Mat();
         Mat contourMat = src.clone();
-        Imgproc.findContours(contourMat, contours, new Mat(), Imgproc.RETR_LIST,Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(contourMat, contours,herarchy, Imgproc.RETR_LIST,Imgproc.CHAIN_APPROX_SIMPLE);
+
         for(int i=0; i< contours.size();i++){
-            System.out.println(Imgproc.contourArea(contours.get(i)));
-            // if (Imgproc.contourArea(contours.get(i)) > 50 ){
-            Rect rect = Imgproc.boundingRect(contours.get(i));
-            System.out.println(rect.height);
-            //if (rect.height > 28){
-            Scalar scalar = new Scalar(src.get((int)rect.y + rect.width/2,(int)rect.x+rect.height/2));
-            Core.rectangle(src, new Point(rect.x,rect.y), new Point(rect.x+rect.width,rect.y+rect.height),scalar);
-            //}
-            //}
+            //System.out.println(Imgproc.contourArea(contours.get(i)));
+            if (Imgproc.contourArea(contours.get(i)) < 200 ){
+                Rect rect = Imgproc.boundingRect(contours.get(i));
+                //System.out.println(rect.height);
+                if (rect.height > 28){
+                    Scalar scalar = new Scalar(src.get((int)rect.y + rect.width/2,(int)rect.x+rect.height/2));
+                    //Core.rectangle(src, new Point(rect.x,rect.y), new Point(rect.x+rect.width,rect.y+rect.height),scalar);
+                    Imgproc.floodFill(src,new Mat(), new Point(rect.x+(rect.width/2),rect.y+(rect.height/2)),scalar);
+                }
+            }
         }
+        //Imgproc.drawContours(src,contours,-1, new Scalar(0,0,0),0,-1,herarchy);
         return src;
     }
 
