@@ -132,6 +132,8 @@ public class ImageConverter {
         Mat I2 = new Mat();
         Core.absdiff(J4,background,I2);
         Log.i("IMGocnv.main","removed bg");
+        int strelFactorOfThree = (int) (Math.ceil(70.0 * resaled_widthFactor));
+        strelSize = 3 * strelFactorOfThree;
         strelSize = (int)(210 * resaled_widthFactor);
         Mat octaStrel = octagonStrel(strelSize);
         Mat I3 = new Mat();
@@ -211,33 +213,34 @@ public class ImageConverter {
     }
     public static Mat imfill(Mat src){
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-        Mat heirarchy = new Mat();
-        Imgproc.findContours(src.clone(), contours, heirarchy, Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
-
-        Mat edges = new Mat();
-        Imgproc.Canny(src,edges,100,200);
-        Imgproc.copyMakeBorder(edges, edges, 1, 1, 1, 1, Imgproc.BORDER_REPLICATE);
-        for(MatOfPoint matOfPoints: contours){
-            for(Point point: matOfPoints.toList()) {
-                Scalar scalar = new Scalar(src.get((int)point.y,(int)point.x));
-                Imgproc.floodFill(src, edges, point, scalar);
-            }
+        Mat contourMat = src.clone();
+        Imgproc.findContours(contourMat, contours, new Mat(), Imgproc.RETR_LIST,Imgproc.CHAIN_APPROX_SIMPLE);
+        for(int i=0; i< contours.size();i++){
+            System.out.println(Imgproc.contourArea(contours.get(i)));
+            // if (Imgproc.contourArea(contours.get(i)) > 50 ){
+            Rect rect = Imgproc.boundingRect(contours.get(i));
+            System.out.println(rect.height);
+            //if (rect.height > 28){
+            Scalar scalar = new Scalar(src.get((int)rect.y + rect.width/2,(int)rect.x+rect.height/2));
+            Core.rectangle(src, new Point(rect.x,rect.y), new Point(rect.x+rect.width,rect.y+rect.height),scalar);
+            //}
+            //}
         }
         return src;
     }
 
     public static Mat findingCoutours(Mat src) {
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-        Imgproc.findContours(src, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(src, contours, new Mat(), Imgproc.RETR_LIST,Imgproc.CHAIN_APPROX_SIMPLE);
         for(int i=0; i< contours.size();i++){
             System.out.println(Imgproc.contourArea(contours.get(i)));
-            if (Imgproc.contourArea(contours.get(i)) > 50 ){
+           // if (Imgproc.contourArea(contours.get(i)) > 50 ){
                 Rect rect = Imgproc.boundingRect(contours.get(i));
                 System.out.println(rect.height);
-                if (rect.height > 28){
-                    Core.rectangle(src, new Point(rect.x,rect.height), new Point(rect.y,rect.width),new Scalar(0,0,255));
-                }
-            }
+                //if (rect.height > 28){
+                    Core.rectangle(src, new Point(rect.x,rect.y), new Point(rect.x+rect.width,rect.y+rect.height),new Scalar(0,0,0));
+                //}
+            //}
         }
         return src;
     }
