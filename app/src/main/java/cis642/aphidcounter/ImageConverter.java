@@ -122,30 +122,38 @@ public class ImageConverter {
             height = (int) (height * rescaled_heightFactor);
             source = resizedImage;
         }
+
+        resaled_widthFactor = 1;//todo: test for ratio
+
         Mat matDiskStrel10 = createDisk(diskStrel10);
         Mat matDiskStrel25 = createDisk(diskStrel25);
 
         Mat grayScaled = new Mat();
         grayScaled = grayScalConversion(source);
         Mat J4 = new Mat();
-        J4 = imadjust(grayScaled);
+        J4 = imadjust(grayScaled,true);
         Mat background = new Mat();
         int strelSize = (int)(450 * resaled_widthFactor);
         Mat strel = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(strelSize,strelSize));
         background = imopen(grayScaled,strel);
         Mat I2 = new Mat();
-        Core.absdiff(J4,background,I2);
+        Core.subtract(J4,background,I2);
+        Mat J3 = new Mat();
+        J3 = imadjust(I2,false);
+
         Log.i("IMGocnv.main","removed bg");
         int strelFactorOfThree = (int) (Math.ceil(70.0 * resaled_widthFactor));
         strelSize = 3 * strelFactorOfThree;
         strelSize = (int)(210 * resaled_widthFactor);
         Mat octaStrel = octagonStrel(strelSize);
         Mat I3 = new Mat();
-        I3 = imtophat(I2, octaStrel);
+        I3 = imtophat(J3, octaStrel);
         Mat I4 = new Mat();
         I4 = imfill(I3);
         Mat M1 = new Mat();
         Imgproc.medianBlur(I4,M1,3);
+        strel = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_ELLIPSE, new Size(3,3));
+        Imgproc.dilate(M1.clone(), M1, strel);
         Mat I5 = new Mat();
         I5 = imfill(M1);
         Mat I6 = new Mat();
@@ -155,7 +163,9 @@ public class ImageConverter {
         Mat I7 = new Mat();
         I7 = imfill(I6);
         Mat M2 = new Mat();
-        Imgproc.medianBlur(I7,M2,4);
+        Imgproc.medianBlur(I7,M2,3);
+        strel = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_ELLIPSE, new Size(3,3));
+        Imgproc.dilate(M2.clone(), M2, strel);
         Mat I8 = new Mat();
         I8 = imfill(M2);
         Mat I9 = new Mat();
@@ -175,7 +185,7 @@ public class ImageConverter {
         Mat I11 = new Mat();
         I11 = imfill(I10);
         Mat I12 = new Mat();
-        I12 = imadjust(I11);
+        I12 = imadjust(I11,false);
 
         Mat heirarchy = new Mat();
         convertedImage = findEdges(I12);
@@ -194,9 +204,12 @@ public class ImageConverter {
         Imgproc.cvtColor(src,grayScaled,Imgproc.COLOR_RGB2GRAY);
         return grayScaled;
     }
-    public static Mat imadjust(Mat src){
+    public static Mat imadjust(Mat src,boolean flag){
         Mat imadjusted = src.clone();
-        imadjusted.convertTo(imadjusted,-1, 1.0);
+        if(flag)
+            src.clone().convertTo(imadjusted, -1,1.5,-120);
+        else
+            src.clone().convertTo(imadjusted, -1,1.15);
         return imadjusted;
     }
     public static Mat imopen(Mat src, Mat strel){
@@ -251,7 +264,7 @@ public class ImageConverter {
     }
     public static Mat findEdges(Mat src){
         Mat mask = new Mat();
-        Imgproc.Canny(src,mask,100,200);
+        Imgproc.Canny(src,mask,350,350);
         return mask;
     }
 

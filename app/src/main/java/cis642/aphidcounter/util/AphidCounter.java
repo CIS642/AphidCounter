@@ -7,6 +7,7 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
@@ -35,8 +36,16 @@ public class AphidCounter {
         }
         Mat hierarchy = processedImage.clone();
         Imgproc.findContours ( processedImage, contours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE );
-
-        return contours.size();
+        int counter = 0;
+        for(int i = 0 ; i < contours.size(); i ++){
+            if(Imgproc.contourArea(contours.get(i)) > 3.0) {
+                Rect rect = Imgproc.boundingRect(contours.get(i));
+                double rectArea = rect.width * rect.height;
+                if (rectArea < 250 && rectArea > 5)
+                    counter++;
+            }
+        }
+        return counter;
     }
     private  List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 
