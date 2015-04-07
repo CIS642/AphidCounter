@@ -106,6 +106,8 @@ public class TakePhotos extends Activity {
 
     private ArrayAdapter<String> dataAdapter;
 
+    private Intent intent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -163,7 +165,7 @@ public class TakePhotos extends Activity {
         if(requestCode == 0)
         {
             // on photo capture, result code = -1. on back button press, result code = 0
-            if(requestCode == 0 && resultCode == -1)
+            if(resultCode == -1)
             {
                 // Rename the photo filename to something unique.
                 String photoName = RenamePhoto();
@@ -176,12 +178,12 @@ public class TakePhotos extends Activity {
 
                     // Add the photo to the Photo Manager, which will save it to Photos.txt
                     photoManager.AddPhoto(photoName + "," +
-                                          "notconverted" + "," +
-                                          photoSet.GetDateTaken() + "," +
-                                          photoSet.GetField().name() + "," +
-                                          photoSet.GetField().GetCropType() + "," +
-                                          photoSet.GetBugType() + "," +
-                                          "0");
+                            "notconverted" + "," +
+                            photoSet.GetDateTaken() + "," +
+                            photoSet.GetField().name() + "," +
+                            photoSet.GetField().GetCropType() + "," +
+                            photoSet.GetBugType() + "," +
+                            "0");
                     photoCount++;
                 }
 
@@ -200,22 +202,21 @@ public class TakePhotos extends Activity {
                     selectBug.setEnabled(false);
                 }
 
-                //PhotoSetManager.Save();
                 psManager.Save();
 
                 UpdateView();
-            }
 
-            // reset the spinner after coming from the Add Field activity.
-            if (resultCode == 1)
+                startActivityForResult(intent, 0);
+            }
+            else if (resultCode == 1)
             {
+                // reset the spinner after coming from the Add Field activity.
                 Spinner selectField = (Spinner) findViewById(R.id.fieldTypeSpinner);
                 selectField.setSelection(0);
             }
-
-            // reset the spinner after coming from the add bug activity (todo)
-            if (resultCode == 2)
+            else if (resultCode == 2)
             {
+                // reset the spinner after coming from the add bug activity (todo)
                 Spinner selectBug = (Spinner) findViewById(R.id.bugTypeSpinner);
                 selectBug.setSelection(0);
             }
@@ -359,7 +360,8 @@ public class TakePhotos extends Activity {
                 File photoFile = new File(fileManager.GetPhotosDirectory() + File.separator + TEMP_PHOTO_NAME);
 
                 // Start the activity to take a photo.
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                //Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
 
                 //if (directory.exists())
                 if (fileManager.GetPhotosDirectory().exists())
@@ -367,6 +369,7 @@ public class TakePhotos extends Activity {
 
                 startActivityForResult(intent, 0);
             }
+
         });
     }
 

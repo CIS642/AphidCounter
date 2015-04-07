@@ -2,7 +2,9 @@ package cis642.aphidcounter;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.CursorJoiner;
 import android.graphics.Bitmap;
+import android.graphics.Interpolator;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -24,30 +26,30 @@ import org.opencv.core.Mat;
 import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.*;
 
+
+
 import cis642.aphidcounter.activity.TakePhotos;
 import cis642.aphidcounter.util.AphidCounter;
 
 import static cis642.aphidcounter.R.drawable.ic_launcher;
 
 //THIS"LL B FOR TESTNG PURPOSES
-public class MainActivity extends ActionBarActivity implements View.OnClickListener {
+public class MainActivity extends ActionBarActivity {//implements View.OnClickListener {
 
-    Button testing_process;
-    Button cancel_button;
-    Button loadPhoto;
-    Button take_photo;
-    ImageView aphid_image;
+    private Button testing_process, cancel_button, loadPhoto, take_photo;
+    private ImageView aphid_image;
 
-    ImageConverter imageConverter;
+    private ImageConverter imageConverter;
 
-    final int READ_REQUEST_CODE = 42;
+    private final int READ_REQUEST_CODE = 42;
 
-    Uri imageUri;
-    Bitmap bmConvertedImage;
+    private Uri imageUri;
+    private Bitmap bitmap, bmConvertedImage;
+    private Mat source, convertedImage;
 
-    int aphidCount;
+    private int aphidCount;
 
-    ConvertPhotosTask task = null;
+    private ConvertPhotosTask task = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,28 +58,18 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         if (!OpenCVLoader.initDebug()) {
             // Handle initialization error
         }
-        /**
-         * Initialize the Take Picture button.
-         */
 
-        testing_process = (Button) findViewById(R.id.testing_button);
-        testing_process.setOnClickListener(this);
+
+        //testing_process = (Button) findViewById(R.id.testing_button);
+        //testing_process.setOnClickListener(this);
 
         cancel_button = (Button) findViewById(R.id.cancel_button);
         setCancelButtonListener();
 
         setLoadPhotoButtonListener();
 
-//        take_photo = (Button) findViewById(R.id.examine_photo);
-//        take_photo.setOnClickListener(
-//            new ImageButton.OnClickListener(){
-//                @Override
-//                public void onClick(View view){
-//                    Intent myIntent = new Intent(view.getContext(), TakePhotos.class);
-//                    startActivityForResult(myIntent,0);
-//                }
-//            }
-//        );
+        imageConverter = new ImageConverter();
+
     }
 
 
@@ -108,7 +100,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         cancel_button.setOnClickListener(new ImageButton.OnClickListener(){
                                              @Override
                                              public void onClick(View view){
-
+                                                 Log.i("MainActivity", "cancelled pressed");
+                                                 cancel_button.setEnabled(false);
+                                                 cancel_button.setText("Cancelling...");
+                                                 imageConverter.setCancel(true);
                                              }
                                          }
         );
@@ -150,13 +145,26 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
             if (resultData != null) {
 
-                loadPhoto.setClickable(false);
+                TextView tvAphidCount = (TextView) findViewById(R.id.aphid_count_text);
+                tvAphidCount.setText("Aphid Count: ");
 
+                loadPhoto.setEnabled(false);
+                cancel_button.setEnabled(true);
                 imageUri = resultData.getData();
-                task = new ConvertPhotosTask();
-                task.execute(""); // have array of 4 tasks to do 4 images
+                //uriToBitmap(imageUri);
 
-                //uriToBitmap(resultData.getData());
+//                if (null != bitmap) {
+//
+//                    Mat source = new Mat();
+//
+//                    Utils.bitmapToMat(bitmap, source);
+//
+//                    convertLoadedImage(source);
+//
+//                }
+
+                task = new ConvertPhotosTask();
+                task.execute(imageUri); // have array of 4 tasks to do 4 images
 
             }
         }
@@ -169,24 +177,13 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
      */
     private void uriToBitmap(Uri uriData) {
 
-        Uri uri = uriData;
-        Log.i("", "Uri: " + uri.toString());
-        Mat source = new Mat();
-        Bitmap bitmap = null;
+        Log.i("", "Uri: " + uriData.toString());
 
         try {
 
-            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uriData);
 
         } catch (Exception ex) { ex.printStackTrace(); }
-
-        if (null != bitmap) {
-
-            Utils.bitmapToMat(bitmap, source);
-
-            convertLoadedImage(source);
-
-        }
 
     }
 
@@ -196,105 +193,137 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
      */
     private void convertLoadedImage(Mat source) {
 
-        Mat convertedImage = new Mat();
-        imageConverter = new ImageConverter();
-
         try {
 
+            imageConverter = new ImageConverter();
             imageConverter.setSource(source);                       // Set the source Mat
             imageConverter.ConvertImage();                          // Convert the image Mat
-            convertedImage = imageConverter.getConvertedImage();    // Get the converted Image Mat
 
-            AphidCounter aphidCounter = new AphidCounter(convertedImage);
-            Log.i("", "Counting aphids");
-            aphidCount = aphidCounter.countAphid();
-            Log.i("", "Aphid count: " + aphidCount);
+            if (!imageConverter.getCancel())    // if the conversion was not cancelled
+            {
+                convertedImage = imageConverter.getConvertedImage();    // Get the converted Image Mat
+
+                AphidCounter aphidCounter = new AphidCounter(convertedImage);
+                Log.i("MainActivity", "Counting aphids");
+                aphidCount = aphidCounter.countAphid();
+                Log.i("MainActivity", "Aphid count: " + aphidCount);
 
 
-            // Create a bitmap to store the converted image:
-            bmConvertedImage = Bitmap.createBitmap(convertedImage.cols(),
-                    convertedImage.rows(),
-                    Bitmap.Config.ARGB_8888);
+                // Create a bitmap to store the converted image:
+                bmConvertedImage = Bitmap.createBitmap(convertedImage.cols(),
+                        convertedImage.rows(),
+                        Bitmap.Config.ARGB_8888);
 
-            Utils.matToBitmap(convertedImage, bmConvertedImage);    // Convert the Mat to bitmap
+                Utils.matToBitmap(convertedImage, bmConvertedImage);    // Convert the Mat to bitmap
+            }
 
         } catch (Exception ex) { ex.printStackTrace(); }
 
     }
 
 
-    @Override
-    public void onClick(View view) {
-        Log.i("PROCESS TRACE", "Doing image processing");
-
-        Mat source = new Mat();
-        Mat convertedImage = new Mat();
-
-        imageConverter = new ImageConverter();
-        AphidCounter aphidCounter;
-
-        try {
-            // Load the image resource as a Mat:
-            source = Utils.loadResource(MainActivity.this, R.drawable.test_img2_small);
-
-            imageConverter.setSource(source);                       // Set the source Mat
-            imageConverter.ConvertImage();                          // Convert the image Mat
-            convertedImage = imageConverter.getConvertedImage();    // Get the converted Image Mat
-
-            // Create a bitmap to store the converted image:
-            Bitmap bmConvertedImage = Bitmap.createBitmap(convertedImage.cols(),
-                    convertedImage.rows(),
-                    Bitmap.Config.ARGB_8888);
-            aphidCounter = new AphidCounter(convertedImage);
-            Log.i("Average AphidCount: ", Integer.toString(aphidCounter.countAphid()));
-            Utils.matToBitmap(convertedImage, bmConvertedImage);    // Convert the Mat to bitmap
-
-            // Get the imageview of the pic shown on the app screen:
-            ImageView ivAphidPic = (ImageView) findViewById(R.id.aphid_image);
-
-            // Update the image shown on the app screen to the newly converted image:
-            ivAphidPic.setImageBitmap(bmConvertedImage);
-
-        } catch(Exception e){
-            e.printStackTrace();
-        }
-    }
+//    @Override
+//    public void onClick(View view) {
+//        Log.i("PROCESS TRACE", "Doing image processing");
+//
+//        source = new Mat();
+//        convertedImage = new Mat();
+//        imageConverter = new ImageConverter();
+//        AphidCounter aphidCounter;
+//
+//        try {
+//            // Load the image resource as a Mat:
+//            source = Utils.loadResource(MainActivity.this, R.drawable.test_img2_small);
+//
+//            imageConverter.setSource(source);                       // Set the source Mat
+//            imageConverter.ConvertImage();                          // Convert the image Mat
+//            convertedImage = imageConverter.getConvertedImage();    // Get the converted Image Mat
+//
+//            // Create a bitmap to store the converted image:
+//            Bitmap bmConvertedImage = Bitmap.createBitmap(convertedImage.cols(), convertedImage.rows(), Bitmap.Config.ARGB_8888);
+//            aphidCounter = new AphidCounter(convertedImage);
+//            Log.i("Average AphidCount: ", Integer.toString(aphidCounter.countAphid()));
+//            Utils.matToBitmap(convertedImage, bmConvertedImage);    // Convert the Mat to bitmap
+//
+//            // Get the imageview of the pic shown on the app screen:
+//            ImageView ivAphidPic = (ImageView) findViewById(R.id.aphid_image);
+//
+//            // Update the image shown on the app screen to the newly converted image:
+//            ivAphidPic.setImageBitmap(bmConvertedImage);
+//
+//        } catch(Exception e){
+//            e.printStackTrace();
+//        }
+//    }
 
 
 
-    private class ConvertPhotosTask extends AsyncTask<String, Integer, String>
-    {
+    private class ConvertPhotosTask extends AsyncTask<Uri, Integer, String> {
 
-        protected String doInBackground(String... strings)
-        {
+        protected String doInBackground(Uri... uris) {
 
-            if (!this.isCancelled())
-                uriToBitmap(imageUri);
+            try { uriToBitmap(uris[0]); } catch (Exception ex){ }
 
+            if (null != bitmap) {
+
+                Mat source = new Mat();
+
+                Utils.bitmapToMat(bitmap, source);
+
+                convertLoadedImage(source);
+
+            }
+
+            Log.i("doinbackground", "cancelled??: " + imageConverter.getCancel());
+
+            if (imageConverter.getCancel())
+                return "Cancelled";
             return "Done";
 
         }
 
-        protected void onProgressUpdate(Integer... progress)
-        {
+
+        protected void onProgressUpdate(Integer... progress) {
 
         }
 
-        protected void onPostExecute(String strings)
-        {
 
-            Log.i("", "onPostExecute() called");
-            loadPhoto.setClickable(true);
+        protected void onPostExecute(String strings) {
 
-            // Get the TextView that will show the aphid count, & then append the aphid count to it.
-            TextView tvAphidCount = (TextView) findViewById(R.id.aphid_count_text);
-            tvAphidCount.append(" " + aphidCount);
+            Log.i("onpostexecute", "onPostExecute() called");
+            cancel_button.setEnabled(false);
+            loadPhoto.setEnabled(true);
 
-            // Get the imageview of the pic shown on the app screen:
-            ImageView ivAphidPic = (ImageView) findViewById(R.id.aphid_image);
+            if (strings.equals("Cancelled")) {
 
-            // Update the image shown on the app screen to the newly converted image:
-            ivAphidPic.setImageBitmap(bmConvertedImage);
+                Log.i("onpostexecute", "Cancelled");
+                cancel_button.setText("Cancel");
+                source = null;
+                bitmap = null;
+                imageUri = null;
+                imageConverter = null;
+                finish();
+
+            } else {
+                Log.i("onpostexecute", strings);
+                // Get the TextView that will show the aphid count, & then append the aphid count to it.
+                TextView tvAphidCount = (TextView) findViewById(R.id.aphid_count_text);
+                tvAphidCount.setText("Aphid Count: " + aphidCount);
+
+                // Get the imageview of the pic shown on the app screen:
+                ImageView ivAphidPic = (ImageView) findViewById(R.id.aphid_image);
+
+                // Update the image shown on the app screen to the newly converted image:
+                ivAphidPic.setImageBitmap(bmConvertedImage);
+
+                bmConvertedImage = null;
+                convertedImage = null;
+                source = null;
+                bitmap = null;
+                imageUri = null;
+                imageConverter = null;
+
+            }
 
         }
 

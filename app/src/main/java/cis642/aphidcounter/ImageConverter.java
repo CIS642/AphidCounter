@@ -49,6 +49,11 @@ public class ImageConverter {
      * For managing files.
      */
     private FileManager fileManager = new FileManager();
+    /**
+     * Flag that is set when the user wishes to stop converting.
+     */
+    private static boolean cancelConversion = false;
+
 /**
  * Number of aphids found on this photo.
  */
@@ -88,6 +93,18 @@ public class ImageConverter {
     public Mat getConvertedImage() {
         return this.convertedImage;
     }
+
+    /**
+     * Sets the cancel flag when the user wishes to stop converting.
+     * @param cancel
+     */
+    public void setCancel(boolean cancel) { this.cancelConversion = cancel; }
+
+    /**
+     * Gets the cancellation flag's status.
+     * @return
+     */
+    public boolean getCancel() { return this.cancelConversion; }
 /**
  * Get the number of aphids found on this photo.
  * @return
@@ -317,6 +334,8 @@ public class ImageConverter {
             }
         }
     }
+
+
     private static int [][] diskStrel10 =
             {
                     {0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0},
