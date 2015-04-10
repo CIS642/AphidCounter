@@ -125,79 +125,90 @@ public class ImageConverter {
     public boolean ConvertImage() {
         boolean success = false;
         int width, height;
-        double resaled_widthFactor = 1.0;
-        double rescaled_heightFactor = 1.0;
         Mat resizedImage;
         width = source.width();
         height = source.height();
         resizedImage = new Mat();
+        //resizing images that are too big;
         if(width > 1200 || height > 1200){
             Imgproc.resize(source,resizedImage,new Size(1000, 850), 0, 0,Imgproc.INTER_NEAREST);
-            resaled_widthFactor = resizedImage.width()/(source.width()*1.0);
-            rescaled_heightFactor = resizedImage.height()/(source.height() * 1.0);
-            width = (int)(width * resaled_widthFactor);
-            height = (int) (height * rescaled_heightFactor);
             source = resizedImage;
         }
-
-        resaled_widthFactor = 1;//todo: test for ratio
 
         Mat matDiskStrel10 = createDisk(diskStrel10);
         Mat matDiskStrel25 = createDisk(diskStrel25);
 
+        //Grey Scale Conversion
         Mat grayScaled = new Mat();
         grayScaled = grayScalConversion(source);
+        //showResult(grayScaled.clone(), "Step 1 - GrayScaled");
+
         Mat J4 = new Mat();
-        J4 = imadjust(grayScaled,true);
+        J4 = imadjust(grayScaled.clone(),true);
+        //showResult(J4.clone(), "Step 2 - 1st Imadjust");
+
+
         Mat background = new Mat();
-        int strelSize = (int)(450 * resaled_widthFactor);
+        int strelSize = 450;
         Mat strel = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(strelSize,strelSize));
         background = imopen(grayScaled,strel);
+        // showResult(background.clone(), "Step 3 - BG");
+
         Mat I2 = new Mat();
-        Core.subtract(J4,background,I2);
+        Core.subtract(J4, background, I2);
+        //showResult(I2, "Step 4 - Removed BG");
+
+
         Mat J3 = new Mat();
         J3 = imadjust(I2,false);
+        //showResult(J3, "Step 5 - 2nd ImAdjusted");
 
-        Log.i("IMGocnv.main","removed bg");
-        int strelFactorOfThree = (int) (Math.ceil(70.0 * resaled_widthFactor));
-        strelSize = 3 * strelFactorOfThree;
-        strelSize = (int)(210 * resaled_widthFactor);
+
+
+        strelSize = 210;
         Mat octaStrel = octagonStrel(strelSize);
         Mat I3 = new Mat();
         I3 = imtophat(J3, octaStrel);
+        //showResult(I3, "Step 6 - OctStrel");
+
         Mat I4 = new Mat();
         I4 = imfill(I3);
+        //showResult(I4, "Step 7 - 1st hole fill");
+
         Mat M1 = new Mat();
-        Imgproc.medianBlur(I4,M1,3);
+        Imgproc.medianBlur(I4,M1,1);
         strel = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_ELLIPSE, new Size(3,3));
         Imgproc.dilate(M1.clone(), M1, strel);
+        //Imgproc.blur(I4, M1, new Size(7,7));;
+        //Imgproc.GaussianBlur(I4, M1, new Size(7,7), 1.0);
+        //showResult(I4, "Step 8 - 7x7 blur");
+
         Mat I5 = new Mat();
         I5 = imfill(M1);
+        //showResult(I5, "Step 9 - 2nd hole fill");
+
+
         Mat I6 = new Mat();
-        strelSize = (int)(45 * resaled_widthFactor);
+        strelSize = 45;
         strel = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT,new Size(strelSize,strelSize));
         I6 = imtophat(I5, strel);
+        //showResult(I6, "Step 10 - square imtophat");
+
         Mat I7 = new Mat();
         I7 = imfill(I6);
         Mat M2 = new Mat();
         Imgproc.medianBlur(I7,M2,3);
         strel = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_ELLIPSE, new Size(3,3));
         Imgproc.dilate(M2.clone(), M2, strel);
+
+
         Mat I8 = new Mat();
         I8 = imfill(M2);
         Mat I9 = new Mat();
-        strelSize = (int)(10 * resaled_widthFactor);
-        Log.i("STRELSIZE:", String.valueOf(strelSize));
-        if(strelSize < 3){
-            strelSize = 5;
-        }
-        //strel = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_ELLIPSE, new Size(strelSize,strelSize));
         I9 = imtophat(I8,matDiskStrel10);
         Mat M3 = new Mat();
-        M3 = imfill(I9);
+        Imgproc.medianBlur(I9, M3, 3);
         Mat I10 = new Mat();
-        strelSize = (int)(25 * resaled_widthFactor);
-        //strel = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_ELLIPSE, new Size(strelSize,strelSize));
         I10 = imtophat(M3,matDiskStrel25);
         Mat I11 = new Mat();
         I11 = imfill(I10);
@@ -224,7 +235,7 @@ public class ImageConverter {
     public static Mat imadjust(Mat src,boolean flag){
         Mat imadjusted = src.clone();
         if(flag)
-            src.clone().convertTo(imadjusted, -1,1.5,-120);
+            src.clone().convertTo(imadjusted, -1,1.5,-100);
         else
             src.clone().convertTo(imadjusted, -1,1.15);
         return imadjusted;
@@ -248,13 +259,10 @@ public class ImageConverter {
         Mat herarchy = new Mat();
         Mat contourMat = src.clone();
         Imgproc.findContours(contourMat, contours,herarchy, Imgproc.RETR_LIST,Imgproc.CHAIN_APPROX_SIMPLE);
-
         for(int i=0; i< contours.size();i++){
-            //System.out.println(Imgproc.contourArea(contours.get(i)));
-            if (Imgproc.contourArea(contours.get(i)) < 230 ){
+            if (Imgproc.contourArea(contours.get(i)) <= 3 ){
                 Rect rect = Imgproc.boundingRect(contours.get(i));
-                //System.out.println(rect.height);
-                if (rect.height > 15 && rect.width > 15){
+                if (rect.height > 2){
                     Scalar scalar = new Scalar(src.get((int)rect.y + rect.width/2,(int)rect.x+rect.height/2));
                     //Core.rectangle(src, new Point(rect.x,rect.y), new Point(rect.x+rect.width,rect.y+rect.height),scalar);
                     Imgproc.floodFill(src,new Mat(), new Point(rect.x+(rect.width/2),rect.y+(rect.height/2)),scalar);
@@ -264,24 +272,9 @@ public class ImageConverter {
         return src;
     }
 
-    public static Mat findingCoutours(Mat src) {
-        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-        Imgproc.findContours(src, contours, new Mat(), Imgproc.RETR_LIST,Imgproc.CHAIN_APPROX_SIMPLE);
-        for(int i=0; i< contours.size();i++){
-            System.out.println(Imgproc.contourArea(contours.get(i)));
-           // if (Imgproc.contourArea(contours.get(i)) > 50 ){
-                Rect rect = Imgproc.boundingRect(contours.get(i));
-                System.out.println(rect.height);
-                //if (rect.height > 28){
-                    Core.rectangle(src, new Point(rect.x,rect.y), new Point(rect.x+rect.width,rect.y+rect.height),new Scalar(0,0,0));
-                //}
-            //}
-        }
-        return src;
-    }
     public static Mat findEdges(Mat src){
         Mat mask = new Mat();
-        Imgproc.Canny(src,mask,350,350);
+        Imgproc.Canny(src,mask,450,400);
         return mask;
     }
 
@@ -325,16 +318,6 @@ public class ImageConverter {
         Imgproc.warpAffine(src,rotatedImage,r,new Size(src.width(),src.height()));
         return rotatedImage;
     }
-
-    private static void displayMat(Mat mat){
-        for(int i = 0 ; i < mat.width(); i ++){
-            String line = "";
-            for(int j = 0 ; j < mat.height() ; j ++){
-                line += String.valueOf((int)mat.get(i,j)[0]) + " ";
-            }
-        }
-    }
-
 
     private static int [][] diskStrel10 =
             {

@@ -38,11 +38,13 @@ public class AphidCounter {
         Imgproc.findContours ( processedImage, contours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE );
         int counter = 0;
         for(int i = 0 ; i < contours.size(); i ++){
-            if(Imgproc.contourArea(contours.get(i)) > 3.0) {
+            if(Imgproc.contourArea(contours.get(i)) > 1.5) {
                 Rect rect = Imgproc.boundingRect(contours.get(i));
                 double rectArea = rect.width * rect.height;
-                if (rectArea < 250 && rectArea > 5)
+                double contourRatio = Math.min(rect.width * 1.0,rect.height * 1.0)/Math.max(rect.width * 1.0,rect.height * 1.0);
+                if (rectArea < 200 && rectArea > 5 && rect.width < 20 && rect.height < 20 && contourRatio > 0.7){
                     counter++;
+                }
             }
         }
         return counter;
