@@ -7,11 +7,13 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -22,7 +24,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -42,14 +43,12 @@ import cis642.aphidcounter.storage.DatabaseOpenHelper;
 public class TakePhotos extends Activity {
 
     private DatabaseOpenHelper mDbHelper;
-    private SimpleCursorAdapter mAdapter;
     private Spinner fieldTypeSpinner;
     private int fieldItemIndex = 0;
 
     /**
-     * A list of photosets.
+     * Photoset manager.
      */
-    //private ArrayList<PhotoSet> photoSets = new ArrayList<PhotoSet>();
     private static PhotoSetManager psManager = PhotoSetManager.GetInstance();
 
     /**
@@ -60,7 +59,7 @@ public class TakePhotos extends Activity {
     /**
      * The alert that will display when the user clicks the Finish button.
      */
-    private AlertDialog confirmFinish;
+    private AlertDialog confirmFinish, explanationDialog;
 
     /**
      * Original filename of the saved photo that will be renamed.
@@ -102,11 +101,20 @@ public class TakePhotos extends Activity {
      */
     private final PhotoSet photoSet = new PhotoSet("", null, null);
 
+    /**
+     * These will get set to true if the user selects a bug or field, respectively.
+     */
     private boolean selectedBug = false, selectedField = false;
 
+    /**
+     * Used to get the stored Field data.
+     */
     private ArrayAdapter<String> dataAdapter;
 
-    private Intent intent;
+    /**
+     * The camera intent that will be launched when the user wants to take photos.
+     */
+    private Intent cameraIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,34 +124,12 @@ public class TakePhotos extends Activity {
         // Create the unique ID that will be associated with this photo set and it's images.
         photoSetID = Long.toString(System.currentTimeMillis() / 1000);
 
-        mDbHelper = new DatabaseOpenHelper(this);
-        fieldTypeSpinner = (Spinner) findViewById(R.id.fieldTypeSpinner);
-        Intent myIntent = getIntent();
-
-        Cursor c = mDbHelper.getWritableDatabase().query(DatabaseOpenHelper.TABLE_NAME,DatabaseOpenHelper.columns,null,new String[] {},null,null,null);
-        List<String> arraylist = new ArrayList<String>();
-
-        // Initialize array with the option to add a new field.
-        // When this item is clicked, it will launch the Add Field activity.
-        arraylist.add("");
-        arraylist.add(ADD_NEW_FIELD);
-
-        while(c.moveToNext()) {
-            arraylist.add(c.getString(1));
-        }
-
-        dataAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, arraylist);
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        fieldTypeSpinner.setAdapter(dataAdapter);
-
-
-        //Create the photoset for this particular activity:
-        //final PhotoSet photoSet = new PhotoSet("", null, null);
+        // Set the photoset's date to the current date.
         photoSet.SetDateTaken(new GregorianCalendar());
-        //photoSet.SetField(new Field("Test Field Name", "Test Crop Name"));
 
-        // Set the even handlers:
+        // Initalize this activity:
+        initializeFieldSpinner();
+
         SetBackButtonListener();
 
         SetBugTypeListener(photoSet);
@@ -154,8 +140,12 @@ public class TakePhotos extends Activity {
 
         CreateFinishAlertDialog();
 
+        createExplanationDialog();
+
         SetFinishListener();
 
+        // Show the message to explain how to take photos.
+        explanationDialog.show();
 
     }
 
@@ -191,6 +181,8 @@ public class TakePhotos extends Activity {
                 if (!hasAddedPhotoSet)
                 {
                     photoSet.SetPhotoSetID(photoSetID);
+
+                    // Add this photoset to the photoset manager.
                     psManager.Add(photoSet);
                     hasAddedPhotoSet = true;
 
@@ -206,7 +198,8 @@ public class TakePhotos extends Activity {
 
                 UpdateView();
 
-                startActivityForResult(intent, 0);
+                // Start a new camera activity to take another photo:
+                startActivityForResult(cameraIntent, 0);
             }
             else if (resultCode == 1)
             {
@@ -277,18 +270,14 @@ public class TakePhotos extends Activity {
                 // Get the bug that the user selected.
                 String bugType = adapterView.getSelectedItem().toString();
 
-                if (bugType.equals(ADD_NEW_BUG))
-                {
+                if (bugType.equals(ADD_NEW_BUG)) {
                     // todo: add bug activity
-                }
-                else if (!bugType.equals(""))
-                {
+                } else if (!bugType.equals("")) {
                     // Set that as the bug for this photo set.
                     photoSet.SetBugType(bugType);
                     selectedBug = true;
                     EnableTakePhotosButton();
-                }
-                else // blank item is selected so take photos button will be disabled.
+                } else // blank item is selected so take photos button will be disabled.
                 {
                     selectedBug = false;
                     EnableTakePhotosButton();
@@ -296,8 +285,37 @@ public class TakePhotos extends Activity {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) { }
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
+
+    }
+
+    /**
+     * Initially populates the field drop-down menu.
+     */
+    private void initializeFieldSpinner() {
+
+        mDbHelper = new DatabaseOpenHelper(this);
+        fieldTypeSpinner = (Spinner) findViewById(R.id.fieldTypeSpinner);
+        Intent myIntent = getIntent();
+
+        Cursor c = mDbHelper.getWritableDatabase().query(DatabaseOpenHelper.TABLE_NAME,DatabaseOpenHelper.columns,null,new String[] {},null,null,null);
+        List<String> arraylist = new ArrayList<String>();
+
+        // Initialize array with the option to add a new field.
+        // When this item is clicked, it will launch the Add Field activity.
+        arraylist.add("");
+        arraylist.add(ADD_NEW_FIELD);
+
+        while(c.moveToNext()) {
+            arraylist.add(c.getString(1));
+        }
+
+        dataAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, arraylist);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        fieldTypeSpinner.setAdapter(dataAdapter);
 
     }
 
@@ -360,14 +378,12 @@ public class TakePhotos extends Activity {
                 File photoFile = new File(fileManager.GetPhotosDirectory() + File.separator + TEMP_PHOTO_NAME);
 
                 // Start the activity to take a photo.
-                intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                //Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
+                cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-                //if (directory.exists())
                 if (fileManager.GetPhotosDirectory().exists())
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
 
-                startActivityForResult(intent, 0);
+                startActivityForResult(cameraIntent, 0);
             }
 
         });
@@ -395,13 +411,9 @@ public class TakePhotos extends Activity {
         String updatedPhotoName = photoSetID + "-" + (photoCount + 1) + ".jpg";
         File from, to;
         boolean success = false;
-        // photoname = photoname.replace(" ", "");
 
         try
         {
-            //File from = new File(directory + File.separator + "MYPHOTO.jpg");
-            //File updatedName = new File(directory + File.separator + photoname);
-
             from = new File(fileManager.GetPhotosDirectory() + File.separator + TEMP_PHOTO_NAME);
             to = new File(fileManager.GetPhotosDirectory() + File.separator + updatedPhotoName);
 
@@ -471,6 +483,25 @@ public class TakePhotos extends Activity {
                 });
 
         confirmFinish = alertBuilder.create();
+    }
+
+    /**
+     * Create the dialog that will explain to the user how to use the camera.
+     */
+    private void createExplanationDialog() {
+
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setMessage("When you are done using the camera, press the Back arrow button on your phone.");
+        alertBuilder.setCancelable(false);
+        alertBuilder.setPositiveButton("Ok",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                    }
+                });
+
+        explanationDialog = alertBuilder.create();
+
     }
 
     /**

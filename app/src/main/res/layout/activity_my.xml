@@ -20,6 +20,7 @@
     android:orientation="vertical"
     android:clickable="false">
 
+
     <Button
         style="@style/ButtonsStyle"
         android:id="@+id/takePhotos"
