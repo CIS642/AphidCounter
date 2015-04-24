@@ -94,7 +94,6 @@ public class ViewHistory extends Activity {
     private void CreateButtons(LinearLayout historyList)
     {
         GregorianCalendar photoSetDate = new GregorianCalendar();
-        boolean showDateFlag = true;
 
         for (int i = (psManager.Count() - 1); i >= 0; i--)
         {
@@ -105,13 +104,7 @@ public class ViewHistory extends Activity {
             if (!DateToString(photoSetDate).equals(DateToString(psManager.Get(i).GetDate())))
             {
                 photoSetDate = psManager.Get(i).GetDate();
-                showDateFlag = true;
-            }
-
-            if (showDateFlag)
-            {
                 historyList.addView(CreateDateHeader(photoSetDate));
-                showDateFlag = false;
             }
 
             // Create a button for the ith index in the photoSets list.
@@ -188,22 +181,8 @@ public class ViewHistory extends Activity {
     private String DateToString(GregorianCalendar date)
     {
         return date.get(date.YEAR) + "." +
-                (date.get(date.MONTH) + 1) + "." +
+                (date.get(date.MONTH)) + "." +
                 date.get(date.DAY_OF_MONTH);
     }
 
-    /**
-     * Creates the button to go back to the parent activity when pressed.
-     */
-    /*private Button CreateBackButton()
-    {
-        Button goBack = new Button(this);
-
-        goBack.setText("< Back");
-        // Set the styling of the button:
-        goBack.setBackgroundColor(Color.parseColor("#009900"));
-        goBack.setTextColor(Color.parseColor("#FFFFFF"));
-        goBack.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-
-    }*/
 }

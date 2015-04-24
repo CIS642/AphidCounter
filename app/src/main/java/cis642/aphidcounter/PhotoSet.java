@@ -149,7 +149,7 @@ public class PhotoSet implements Serializable {
     public String GetDateTaken()
     {
         return this.dateTaken.get(dateTaken.YEAR) + "." +
-               (this.dateTaken.get(dateTaken.MONTH) + 1) + "." +
+               (this.dateTaken.get(dateTaken.MONTH)) + "." +
                this.dateTaken.get(dateTaken.DAY_OF_MONTH);
     }
 

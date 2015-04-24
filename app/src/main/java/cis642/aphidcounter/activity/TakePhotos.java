@@ -472,6 +472,7 @@ public class TakePhotos extends Activity {
         alertBuilder.setPositiveButton("Yes",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        setReturnIntent();
                         finish();
                     }
                 });
@@ -502,6 +503,25 @@ public class TakePhotos extends Activity {
 
         explanationDialog = alertBuilder.create();
 
+    }
+
+    /**
+     * Adds the photo set ID to the return intent's extras.
+     * When this activity finishes, the ID can be retrieved in the parent activity (MyActivity),
+     * which can use the ID to then launch the View Photoset activity with the given ID.
+     */
+    private void setReturnIntent() {
+
+        Intent returnIntent = new Intent();
+
+        if (photoCount > 0) {
+            returnIntent.putExtra("id", photoSetID);
+            Log.i("TakePhotos - ID: ", photoSetID);
+            setResult(RESULT_OK, returnIntent);
+        }
+        else {
+            setResult(RESULT_CANCELED, returnIntent);
+        }
     }
 
     /**

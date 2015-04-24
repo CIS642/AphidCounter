@@ -23,7 +23,7 @@ import cis642.aphidcounter.manager.PhotoSetManager;
  */
 public class ViewPhotoSet extends Activity {
 
-    private String photoSetIndex;
+    private String photoSetIndex, photoSetId;
     private PhotoSet photoSet;
     private int aphidCount;
     private PhotoManager photoManager;
@@ -40,8 +40,18 @@ public class ViewPhotoSet extends Activity {
         setContentView(R.layout.activity_view_photo_set);
 
         // Get the photoset that was passed to this intent:
-        photoSetIndex = (String) getIntent().getSerializableExtra("PhotoSet");
-        photoSet = psManager.Get(Integer.parseInt(photoSetIndex));
+        photoSetId = (String) getIntent().getSerializableExtra("PhotoSetId");
+
+        if (null == photoSetId) {
+            // Coming from the View History activity, the index will be passed
+            photoSetIndex = (String) getIntent().getSerializableExtra("PhotoSet");
+            photoSet = psManager.Get(Integer.parseInt(photoSetIndex));
+        }
+        else {
+            // Coming from the MyActivity activity, the ID will be passed
+            photoSet = psManager.GetByID(photoSetId);
+        }
+
         aphidCount = 0;
         photoManager = PhotoManager.GetInstance();
 

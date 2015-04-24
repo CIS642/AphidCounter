@@ -3,6 +3,7 @@ package cis642.aphidcounter.activity;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -19,6 +20,7 @@ import java.io.File;
 import cis642.aphidcounter.MainActivity;
 import cis642.aphidcounter.R;
 import cis642.aphidcounter.ViewHistory;
+import cis642.aphidcounter.ViewPhotoSet;
 import cis642.aphidcounter.manager.FileManager;
 
 //import cis642.aphidcounter.entity.Field;
@@ -42,7 +44,12 @@ public class MyActivity extends Activity {
     private String filePath = "MyFileStorage";
 */
 
+    /**
+     * For managing files.
+     */
     private FileManager fileManager = new FileManager();
+
+    private final int TAKE_PHOTOS_REQUEST_CODE = 7;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +100,7 @@ public class MyActivity extends Activity {
         takePhotos.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
                 Intent myIntent = new Intent(view.getContext(), TakePhotos.class);
-                startActivityForResult(myIntent, 0);
+                startActivityForResult(myIntent, TAKE_PHOTOS_REQUEST_CODE);
             }
 
         });
@@ -179,6 +186,27 @@ public class MyActivity extends Activity {
                 startActivityForResult(myIntent, 0);
             }
         });
+    }
+
+    /**
+     * After selecting a photo from the file dialog, this method will be called.
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param resultData
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+
+        if (requestCode == TAKE_PHOTOS_REQUEST_CODE && resultCode == RESULT_OK) {
+
+            String id = resultData.getStringExtra("id");
+            Log.i("MyActivity - ID: ", id);
+            Intent myIntent = new Intent(this, ViewPhotoSet.class);
+            myIntent.putExtra("PhotoSetId", id);
+            startActivityForResult(myIntent, 0);
+        }
+
     }
 
 }
