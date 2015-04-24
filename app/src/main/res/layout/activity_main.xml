@@ -7,7 +7,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".MainActivity"
-    android:background="@drawable/main_bg">
+    android:background="@drawable/background_gradient">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -23,23 +23,19 @@
             android:paddingBottom="@dimen/activity_vertical_margin"
             android:orientation="vertical"
             android:clickable="false">
-            <!--
-                        <Button
-                            style="@style/ButtonsStyle"
-                            android:id="@+id/testing_button"
-                            android:layout_width="match_parent"
-                            android:layout_height="80dp"
-                            android:text="@string/testing_process"
-                            android:clickable="true" />
 
-                        <Button
-                            style="@style/ButtonsStyle"
-                            android:id="@+id/examin_photo"
-                            android:layout_width="match_parent"
-                            android:layout_height="80dp"
-                            android:text="@string/take_photo"
-                            android:clickable="true" />
-            -->
+            <Button
+                style="@style/GreenButtonStyle"
+                android:id="@+id/goBack"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="&lt; Back"
+                android:textStyle="bold"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"/>
+
             <Button
                 style="@style/ButtonsStyle"
                 android:id="@+id/load_photo"
@@ -50,6 +46,7 @@
 
             <Button
                 style="@style/RedButtonStyle"
+                android:visibility="gone"
                 android:id="@+id/cancel_button"
                 android:text="Cancel"
                 android:enabled="false"
@@ -59,16 +56,34 @@
             <TextView
                 android:id="@+id/aphid_count_text"
                 android:text="Aphid Count: "
-                android:background="#000000"
-                android:textColor="#FFFFFF"
+                android:textColor="#000000"
+                android:textSize="16dp"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
                 android:layout_width="match_parent"
-                android:layout_height="40dp" />
+                android:layout_height="28dp" />
+
+            <TextView
+                android:id="@+id/conversion_time"
+                android:text="Time: "
+                android:textColor="#000000"
+                android:textSize="16dp"
+                android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="28dp" />
 
             <ImageView
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/aphid_image"
-                android:src="@drawable/test_img2_small" />
+                android:adjustViewBounds="true"
+                android:id="@+id/aphid_image" />
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:id="@+id/aphid_image_after" />
 
         </LinearLayout>
 

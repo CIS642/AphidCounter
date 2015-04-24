@@ -188,7 +188,7 @@ public class ViewHistory extends Activity {
     private String DateToString(GregorianCalendar date)
     {
         return date.get(date.YEAR) + "." +
-                date.get(date.MONTH) + "." +
+                (date.get(date.MONTH) + 1) + "." +
                 date.get(date.DAY_OF_MONTH);
     }
 
