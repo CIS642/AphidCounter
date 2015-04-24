@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cis642.aphidcounter.manager.FileManager;
+import cis642.aphidcounter.util.Constants;
 
 /**
  * Created by Staton on 9/25/2014.
@@ -53,11 +54,6 @@ public class ImageConverter {
      * Flag that is set when the user wishes to stop converting.
      */
     private static boolean cancelConversion = false;
-
-/**
- * Number of aphids found on this photo.
- */
-//private int aphidCount = 0;
     /**
      * Constructs a new ImageConverter object.
      */
@@ -93,26 +89,16 @@ public class ImageConverter {
     public Mat getConvertedImage() {
         return this.convertedImage;
     }
-
     /**
      * Sets the cancel flag when the user wishes to stop converting.
      * @param cancel
      */
     public void setCancel(boolean cancel) { this.cancelConversion = cancel; }
-
     /**
      * Gets the cancellation flag's status.
      * @return
      */
     public boolean getCancel() { return this.cancelConversion; }
-/**
- * Get the number of aphids found on this photo.
- * @return
- */
-//public int GetAphidCount()
-//{
-// return this.aphidCount;
-//}
     /**
      * Gets the name of the converted file.
      * @return
@@ -123,119 +109,173 @@ public class ImageConverter {
     }
 
     public boolean ConvertImage() {
+        //Disk Structured Element Creation.
+        Mat matDiskStrel10 = createDisk(Constants.DISKSTRELARRAY_10);
+        Mat matDiskStrel25 = createDisk(Constants.DISKSTRELARRAY_25);
+
+        //Image conversion success flag
         boolean success = false;
-        int width, height;
-        Mat resizedImage;
-        width = source.width();
-        height = source.height();
-        resizedImage = new Mat();
-        //resizing images that are too big;
-        if(width > 1200 || height > 1200){
+
+        //Image resizing for uniformity across different image size input
+        Mat resizedImage = new Mat();
+        if(source.width() > source.height())
             Imgproc.resize(source,resizedImage,new Size(1000, 850), 0, 0,Imgproc.INTER_NEAREST);
-            source = resizedImage;
-        }
+        else
+            Imgproc.resize(source,resizedImage,new Size(850, 1000), 0, 0,Imgproc.INTER_NEAREST);
+        source = resizedImage;
 
-        Mat matDiskStrel10 = createDisk(diskStrel10);
-        Mat matDiskStrel25 = createDisk(diskStrel25);
 
-        //Grey Scale Conversion
-        Mat grayScaled = new Mat();
-        grayScaled = grayScalConversion(source);
-        //showResult(grayScaled.clone(), "Step 1 - GrayScaled");
+        Mat I1 = new Mat();
+        Log.d(Constants.CONVERSION_STATUS, "Step 1: Converting to GrayScale");
+        I1 = grayScalConversion(source);
+
 
         Mat J4 = new Mat();
-        J4 = imadjust(grayScaled.clone(),true);
-        //showResult(J4.clone(), "Step 2 - 1st Imadjust");
+        Log.i(Constants.CONVERSION_STATUS, "Step 2: Adjusting Image Contrast");
+        J4 = imadjust(I1,true);
 
 
         Mat background = new Mat();
-        int strelSize = 450;
-        Mat strel = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(strelSize,strelSize));
-        background = imopen(grayScaled,strel);
-        // showResult(background.clone(), "Step 3 - BG");
+        int bgStrelSize = 450;
+        Mat strel = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(bgStrelSize,bgStrelSize));
+        Log.i(Constants.CONVERSION_STATUS, "Step 3: Creating Morphed Bacground from GrayScaled");
+        background = imopen(I1,strel);
+
 
         Mat I2 = new Mat();
+        Log.i(Constants.CONVERSION_STATUS, "Step 4: Subtracting Morphed Background from Adjusted GrayScaled");
         Core.subtract(J4, background, I2);
-        //showResult(I2, "Step 4 - Removed BG");
 
 
         Mat J3 = new Mat();
+        Log.i(Constants.CONVERSION_STATUS, "Step 5: Adjusting Contrast");
         J3 = imadjust(I2,false);
-        //showResult(J3, "Step 5 - 2nd ImAdjusted");
 
-
-
-        strelSize = 210;
-        Mat octaStrel = octagonStrel(strelSize);
+        int octStrelSize = 210;
+        Mat octaStrel = octagonStrel(octStrelSize);
         Mat I3 = new Mat();
+        Log.i(Constants.CONVERSION_STATUS, "Step 6: Tophat morphing using octagon of size 210");
         I3 = imtophat(J3, octaStrel);
-        //showResult(I3, "Step 6 - OctStrel");
+
 
         Mat I4 = new Mat();
-        I4 = imfill(I3);
-        //showResult(I4, "Step 7 - 1st hole fill");
+        Log.i(Constants.CONVERSION_STATUS, "Step 7: Filling Holes");
+        I4 = imfill(I3,false);
+
 
         Mat M1 = new Mat();
-        Imgproc.medianBlur(I4,M1,1);
-        strel = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_ELLIPSE, new Size(3,3));
-        Imgproc.dilate(M1.clone(), M1, strel);
-        //Imgproc.blur(I4, M1, new Size(7,7));;
-        //Imgproc.GaussianBlur(I4, M1, new Size(7,7), 1.0);
-        //showResult(I4, "Step 8 - 7x7 blur");
+        Log.i(Constants.CONVERSION_STATUS, "Step 8: Median Blur kernel size: 3");
+        Imgproc.medianBlur(I4,M1,3);
+
 
         Mat I5 = new Mat();
-        I5 = imfill(M1);
-        //showResult(I5, "Step 9 - 2nd hole fill");
+        Log.i(Constants.CONVERSION_STATUS, "Step 9: Filling Holes");
+        I5 = imfill(M1,false);
 
 
         Mat I6 = new Mat();
-        strelSize = 45;
-        strel = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT,new Size(strelSize,strelSize));
+        int rectStrelSize = 45;
+        strel = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT,new Size(rectStrelSize,rectStrelSize));
+        Log.i(Constants.CONVERSION_STATUS, "Step 10: Tophat morphing using square of size 45");
         I6 = imtophat(I5, strel);
-        //showResult(I6, "Step 10 - square imtophat");
+
 
         Mat I7 = new Mat();
-        I7 = imfill(I6);
+        Log.i(Constants.CONVERSION_STATUS, "Step 11: Filling Holes");
+        I7 = imfill(I6,false);
+
+
         Mat M2 = new Mat();
+        Log.i(Constants.CONVERSION_STATUS, "Step 12: Median Blur kernel size: 3");
         Imgproc.medianBlur(I7,M2,3);
-        strel = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_ELLIPSE, new Size(3,3));
-        Imgproc.dilate(M2.clone(), M2, strel);
 
 
         Mat I8 = new Mat();
-        I8 = imfill(M2);
+        Log.i(Constants.CONVERSION_STATUS, "Step 13: Filling Holes");
+        I8 = imfill(M2,false);
+
+
         Mat I9 = new Mat();
+        Log.i(Constants.CONVERSION_STATUS, "Step 14: Tophat morphing using Disk of size 10");
         I9 = imtophat(I8,matDiskStrel10);
+
+
         Mat M3 = new Mat();
+        Log.i(Constants.CONVERSION_STATUS, "Step 15: Median Blur kernel size: 1");
         Imgproc.medianBlur(I9, M3, 3);
+
+
         Mat I10 = new Mat();
-        I10 = imtophat(M3,matDiskStrel25);
+        Log.i(Constants.CONVERSION_STATUS, "Step 17: Tophat morphing using Disk of size 25");
+        I10 = imtophat(I9,matDiskStrel25);
+
+
         Mat I11 = new Mat();
-        I11 = imfill(I10);
+        Log.i(Constants.CONVERSION_STATUS, "Step 18: Filling Holes");
+        I11 = imfill(I10,false);
+
         Mat I12 = new Mat();
+        Log.i(Constants.CONVERSION_STATUS, "Step 19: Adjusting Contrast");
         I12 = imadjust(I11,false);
 
-        Mat heirarchy = new Mat();
-        convertedImage = findEdges(I12);
+
+        Mat BWs1 = new Mat();
+        Log.i(Constants.CONVERSION_STATUS, "Step 20: Creating Mat of edges");
+        Imgproc.Canny(I12.clone(),BWs1,100,200);
+
+        Mat edges = new Mat();
+        Log.i(Constants.CONVERSION_STATUS, "Step 21: Filling Holes of Mat of edges, Final hole fill");
+        edges = imfill(BWs1,true);
+
+        Mat BWsdil = new Mat();
+        Mat lineStrel1 = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_CROSS, new Size(2,1));
+        Mat lineStrel2 = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_CROSS, new Size(1,2));
+        Log.i(Constants.CONVERSION_STATUS, "Step 22: Removing Lines");
+        Imgproc.erode(edges,BWsdil, lineStrel1);
+        Imgproc.erode(BWsdil.clone(), BWsdil, lineStrel2);
+
+        convertedImage = BWsdil;
         convertedFile = "c_" + sourceFile;
         String convertedImgFile = fileManager.GetConvertedPhotosDirectory() + File.separator + convertedFile;
 
         try {
             Highgui.imwrite(convertedImgFile, convertedImage);
-                //aphidCount = 0;
             success = true;
         } catch (Exception ex) { ex.printStackTrace(); }
         return success;
     }
+
+    public static Mat createDisk(int[][] arrayOfValues){
+        Mat matObject = new Mat();
+        matObject.create( arrayOfValues.length, arrayOfValues[0].length, CvType.CV_8UC1 );
+        for(int i = 0 ; i < arrayOfValues.length ; i ++){
+            for(int j = 0 ; j < arrayOfValues[i].length ; j++){
+                matObject.put(i,j,arrayOfValues[i][j]);
+            }
+        }
+        return matObject;
+    }
+
+    public static void displayMatInConsole(Mat mat){
+        for(int i = 0 ; i < mat.height(); i ++){
+            for(int j = 0 ; j < mat.width(); j ++){
+                System.out.print(mat.get(i, j)[0] + " ");
+            }
+            System.out.println("\n");
+        }
+    }
+
     public static Mat grayScalConversion(Mat src){
         Mat grayScaled = new Mat();
         Imgproc.cvtColor(src,grayScaled,Imgproc.COLOR_RGB2GRAY);
         return grayScaled;
     }
-    public static Mat imadjust(Mat src,boolean flag){
+
+    public static Mat imadjust(Mat src, boolean flag){
         Mat imadjusted = src.clone();
+        Core.MinMaxLocResult res = Core.minMaxLoc(src.clone());
         if(flag)
-            src.clone().convertTo(imadjusted, -1,1.5,-100);
+            src.clone().convertTo(imadjusted, -1,1.5,-120);
         else
             src.clone().convertTo(imadjusted, -1,1.15);
         return imadjusted;
@@ -251,33 +291,30 @@ public class ImageConverter {
         Mat topHatted = new Mat();
         Mat imopened = new Mat();
         imopened = imopen(src,strel);
-        Core.absdiff(src,imopened,topHatted);
+        Core.subtract(src,imopened,topHatted);
         return topHatted;
     }
-    public static Mat imfill(Mat src){
+    public static Mat imfill(Mat src, boolean isFinal){
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
         Mat herarchy = new Mat();
-        Mat contourMat = src.clone();
-        Imgproc.findContours(contourMat, contours,herarchy, Imgproc.RETR_LIST,Imgproc.CHAIN_APPROX_SIMPLE);
+        Mat contourMask = src.clone();
+        Imgproc.findContours(src.clone(), contours,herarchy, Imgproc.RETR_LIST,Imgproc.CHAIN_APPROX_SIMPLE);
         for(int i=0; i< contours.size();i++){
-            if (Imgproc.contourArea(contours.get(i)) <= 3 ){
+            if (Imgproc.contourArea(contours.get(i)) > 3 ){
                 Rect rect = Imgproc.boundingRect(contours.get(i));
-                if (rect.height > 2){
+                int rectArea = rect.width * rect.height;
+                if (rectArea < 250 && rectArea > 5 && (rect.width < 50 && rect.height < 50)){
                     Scalar scalar = new Scalar(src.get((int)rect.y + rect.width/2,(int)rect.x+rect.height/2));
-                    //Core.rectangle(src, new Point(rect.x,rect.y), new Point(rect.x+rect.width,rect.y+rect.height),scalar);
-                    Imgproc.floodFill(src,new Mat(), new Point(rect.x+(rect.width/2),rect.y+(rect.height/2)),scalar);
+                    if(isFinal) scalar = new Scalar(255,255,255);
+                    List<MatOfPoint> tempContour = new ArrayList<MatOfPoint>();
+                    tempContour.add(contours.get(i));
+                    Imgproc.drawContours(contourMask,tempContour,-1, scalar,-1);
                 }
             }
         }
-        return src;
-    }
 
-    public static Mat findEdges(Mat src){
-        Mat mask = new Mat();
-        Imgproc.Canny(src,mask,450,400);
-        return mask;
+        return contourMask;
     }
-
 
     public static Mat octagonStrel(int size){
         Mat octaStrel = new Mat();
@@ -285,28 +322,6 @@ public class ImageConverter {
         Mat strel = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(dim,dim));
         octaStrel = rotate(strel);
         return octaStrel;
-    }
-
-    public static Mat createDisk(int[][] arrayOfValues){
-        Mat matObject = new Mat();
-        matObject.create( arrayOfValues.length, arrayOfValues[0].length, CvType.CV_8UC1 ); // 8-bit single channel image
-        System.out.println(arrayOfValues.length);
-        for(int i = 0 ; i < arrayOfValues.length ; i ++){
-            for(int j = 0 ; j < arrayOfValues[i].length ; j++){
-                matObject.put(i,j,arrayOfValues[i][j]);
-            }
-        }
-        return matObject;
-    }
-
-    public static Mat createLine(int size, int flag){//0 for vertical, 1 for horizontal
-        Mat strel = new Mat();
-        if(flag == 0)
-            Imgproc.getStructuringElement(Imgproc.CV_SHAPE_CROSS, new Size(1,size));
-        else
-            Imgproc.getStructuringElement(Imgproc.CV_SHAPE_CROSS, new Size(size,1));
-
-        return strel;
     }
 
 
@@ -318,81 +333,4 @@ public class ImageConverter {
         Imgproc.warpAffine(src,rotatedImage,r,new Size(src.width(),src.height()));
         return rotatedImage;
     }
-
-    private static int [][] diskStrel10 =
-            {
-                    {0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0},
-                    {0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
-                    {0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0},
-                    {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
-                    {0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0},
-                    {0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
-                    {0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0}
-            };
-
-    private static int[][] diskStrel25 =
-            {
-                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0},
-                    {0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0},
-                    {0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0},
-                    {0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
-                    {0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0},
-                    {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                    {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
-                    {0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0},
-                    {0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
-                    {0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0},
-                    {0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0},
-                    {0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-
-            };
 }
