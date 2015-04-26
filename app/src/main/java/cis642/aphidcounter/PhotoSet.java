@@ -104,6 +104,24 @@ public class PhotoSet implements Serializable {
     }
 
     /**
+     * Gets the average aphid count of all photos in this set.
+     * @return The average aphid count.
+     */
+    public int GetAverageAphidCount() {
+
+        if (convertedPhotos.size() == 0)
+            return 0;
+
+        int total = 0;
+
+        for (int i = 0; i < convertedPhotos.size(); i++) {
+            total += convertedPhotos.get(i).GetAphidCount();
+        }
+
+        return total / convertedPhotos.size();
+    }
+
+    /**
      * Get the index of this photoset.
      * @return This photoset's index number.
      */

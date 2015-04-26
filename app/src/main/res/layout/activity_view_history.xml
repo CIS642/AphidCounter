@@ -23,6 +23,15 @@
         android:paddingBottom="8dp"
         />
 
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sortBySpinner"
+        android:layout_gravity="center_horizontal"
+        android:spinnerMode="dropdown"
+        android:entries="@array/sortByCriteria"
+        android:prompt="@string/sort_by_prompt" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">

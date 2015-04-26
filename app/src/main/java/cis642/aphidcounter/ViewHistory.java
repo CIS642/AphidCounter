@@ -9,8 +9,11 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -23,6 +26,20 @@ import cis642.aphidcounter.manager.PhotoSetManager;
  */
 public class ViewHistory extends Activity {
 
+    // The index of each item in the drop down spinner.
+    private final int APHID_COUNT_HIGH_TO_LOW = 1;
+    private final int APHID_COUNT_LOW_TO_HIGH = 2;
+    private final int DATE_NEW_TO_OLD = 3;
+    private final int DATE_OLD_TO_NEW = 4;
+    private final int FIELD_NAME_ASCENDING = 5;
+    private final int FIELD_NAME_DESCENDING = 6;
+
+    /**
+     * Array for holding photo sets. They will be stored in an array to make it easier
+     * to sort by a specific criteria.
+     */
+    private PhotoSet photoSet[];
+
     /**
      * A list of photosets.
      */
@@ -34,19 +51,29 @@ public class ViewHistory extends Activity {
      */
     private ArrayList<Button> buttons = new ArrayList<Button>();
 
+    private LinearLayout historyList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_history);
 
+        historyList = (LinearLayout) findViewById(R.id.historyLayout);
+
+        // Populate the area with every photo set.
+        initializePhotoSetArray();
+
+        // Set the event handler for the Sort By dropdown menu
+        setSortBySpinnerListener();
+
         // Set the event handler for the go back button:
         SetBackButtonListener();
 
-        LinearLayout historyList = (LinearLayout) findViewById(R.id.historyLayout);
+        // Initially sort the Array by Date - New to Old
+        sortDateNewToOld();
 
-        // Create the buttons that will appear on the screen, which the user will click on
-        // to view the photoset.
-        CreateButtons(historyList);
+        // Create the buttons to view photo sets.
+        CreateButtons();
     }
 
 
@@ -69,6 +96,18 @@ public class ViewHistory extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Build the array that will hold the photo sets.
+     */
+    private void initializePhotoSetArray(){
+
+        photoSet = new PhotoSet[psManager.Count()];
+
+        for (int i = 0; i < photoSet.length; i++) {
+            photoSet[i] = psManager.Get(i);
+        }
+
+    }
 
     /**
      * Set the event handler for the 'Back' button click.
@@ -86,26 +125,83 @@ public class ViewHistory extends Activity {
     }
 
     /**
+     * Set the event handler for the 'sort by' dropdown menu.
+     */
+    private void setSortBySpinnerListener() {
+
+        Spinner sortBySpinner = (Spinner) findViewById(R.id.sortBySpinner);
+
+        sortBySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+
+                // Handle the event based on which item them chose
+                // Note: 'position' is the 0-based index of the drop down menu.
+                switch (position)
+                {
+                    case APHID_COUNT_HIGH_TO_LOW:
+                        sortAphidCountHighToLow();
+                        CreateButtons();
+                        break;
+                    case APHID_COUNT_LOW_TO_HIGH:
+                        sortAphidCountLowToHigh();
+                        CreateButtons();
+                        break;
+                    case DATE_NEW_TO_OLD:
+                        sortDateNewToOld();
+                        CreateButtons();
+                        break;
+                    case DATE_OLD_TO_NEW:
+                        sortDateOldToNew();
+                        CreateButtons();
+                        break;
+                    case FIELD_NAME_ASCENDING:
+                        sortFieldNameAscending();
+                        CreateButtons();
+                        break;
+                    case FIELD_NAME_DESCENDING:
+                        sortFieldNameDescending();
+                        CreateButtons();
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+
+            }
+
+        });
+
+    }
+
+    /**
      * Create a button for each Photoset.
      * Each button will have the field name and Date the photos were taken.
-     * CLicking the button will then start a new activity, showing the
+     * Clicking the button will then start a new activity, showing the
      * bug type, crop type, and avg number of aphids for the entire set.
      */
-    private void CreateButtons(LinearLayout historyList)
+    private void CreateButtons()
     {
+        // Remove any previous buttons from the linear layout.
+        historyList.removeAllViews();
+
         GregorianCalendar photoSetDate = new GregorianCalendar();
 
-        for (int i = (psManager.Count() - 1); i >= 0; i--)
+        for (int i = 0; i < photoSet.length; i++)
         {
 
             // Compare the date of this photoset with the date of the previous.
             // If the date is different, a new TextView with the current photo set's date
             // will be added to the view, to seperate photosets taken on different days.
-            if (!DateToString(photoSetDate).equals(DateToString(psManager.Get(i).GetDate())))
-            {
-                photoSetDate = psManager.Get(i).GetDate();
-                historyList.addView(CreateDateHeader(photoSetDate));
-            }
+//            if (!DateToString(photoSetDate).equals(DateToString(photoSet[i].GetDate())))
+//            {
+//                photoSetDate = photoSet[i].GetDate();
+//                historyList.addView(CreateDateHeader(photoSetDate));
+//            }
 
             // Create a button for the ith index in the photoSets list.
             Button button = new Button(this);
@@ -123,12 +219,12 @@ public class ViewHistory extends Activity {
 
             // Set the text that will appear on the button.
             // Currently displays the field name and date taken.
-            button.setText(psManager.Get(i).GetField().name() + " - " +
-                    psManager.Get(i).GetDateTaken() + " - " +
-                    "Photo Count: " + psManager.Get(i).GetPhotoCount());
+            button.setText(photoSet[i].GetField().name() + " - " +
+                    photoSet[i].GetDateTaken() + " - " +
+                    "Photo Count: " + photoSet[i].GetPhotoCount());
 
             // The object that will be passed through the button's intent must be declared final.
-            final PhotoSet ps = psManager.Get(i);
+            final PhotoSet ps = photoSet[i];
 
             final String photoSetIndex = Integer.toString(i);
 
@@ -183,6 +279,156 @@ public class ViewHistory extends Activity {
         return date.get(date.YEAR) + "." +
                 (date.get(date.MONTH)) + "." +
                 date.get(date.DAY_OF_MONTH);
+    }
+
+    /**
+     * Sorts the photosets by aphid count (high to low)
+     */
+    private void sortAphidCountHighToLow() {
+
+        PhotoSet temp;
+        int x, y;
+
+        for (int i = 0; i < photoSet.length; i++) {
+            for (int j = 0; j < photoSet.length - 1; j++) {
+
+                x = photoSet[j].GetAverageAphidCount();
+                y = photoSet[j + 1].GetAverageAphidCount();
+
+                if (x < y) {
+                    temp = photoSet[j + 1];
+                    photoSet[j + 1] = photoSet[j];
+                    photoSet[j] = temp;
+                }
+
+            }
+        }
+
+    }
+
+    /**
+     * Sorts the photosets by aphid count (low to high)
+     */
+    private void sortAphidCountLowToHigh() {
+
+        PhotoSet temp;
+        int x, y;
+
+        for (int i = 0; i < photoSet.length; i++) {
+            for (int j = 0; j < photoSet.length - 1; j++) {
+
+                x = photoSet[j].GetAverageAphidCount();
+                y = photoSet[j + 1].GetAverageAphidCount();
+
+                if (x > y) {
+                    temp = photoSet[j + 1];
+                    photoSet[j + 1] = photoSet[j];
+                    photoSet[j] = temp;
+                }
+
+            }
+        }
+
+    }
+
+    /**
+     * Sorts the photosets by date (new to old)
+     */
+    private void sortDateNewToOld() {
+
+        PhotoSet temp;
+        GregorianCalendar x, y;
+
+        for (int i = 0; i < photoSet.length; i++) {
+            for (int j = 0; j < photoSet.length - 1; j++) {
+
+                x = photoSet[j].GetDate();
+                y = photoSet[j + 1].GetDate();
+
+                if (x.compareTo(y) < 0) {
+                    temp = photoSet[j + 1];
+                    photoSet[j + 1] = photoSet[j];
+                    photoSet[j] = temp;
+                }
+
+            }
+        }
+
+    }
+
+    /**
+     * Sorts the photosets by date (old to new)
+     */
+    private void sortDateOldToNew() {
+
+        PhotoSet temp;
+        GregorianCalendar x, y;
+
+        for (int i = 0; i < photoSet.length; i++) {
+            for (int j = 0; j < photoSet.length - 1; j++) {
+
+                x = photoSet[j].GetDate();
+                y = photoSet[j + 1].GetDate();
+
+                if (x.compareTo(y) > 0) {
+                    temp = photoSet[j + 1];
+                    photoSet[j + 1] = photoSet[j];
+                    photoSet[j] = temp;
+                }
+
+            }
+        }
+
+    }
+
+    /**
+     * Sorts the photosets by field name (ascending order)
+     */
+    private void sortFieldNameAscending() {
+
+        PhotoSet temp;
+        String x, y;
+
+        for (int i = 0; i < photoSet.length; i++) {
+            for (int j = 0; j < photoSet.length - 1; j++) {
+
+                x = photoSet[j].GetField().name().toLowerCase();
+                y = photoSet[j + 1].GetField().name().toLowerCase();
+
+                if (x.compareTo(y) > 0) {
+                    temp = photoSet[j + 1];
+                    photoSet[j + 1] = photoSet[j];
+                    photoSet[j] = temp;
+                }
+
+            }
+        }
+
+    }
+
+    /**
+     * Sorts the photosets by field name (descending order)
+     */
+    private void sortFieldNameDescending() {
+
+        PhotoSet temp;
+        String x, y;
+
+        for (int i = 0; i < photoSet.length; i++) {
+            for (int j = 0; j < photoSet.length - 1; j++) {
+
+                x = photoSet[j].GetField().name().toLowerCase();
+                y = photoSet[j + 1].GetField().name().toLowerCase();
+
+                if (x.compareTo(y) < 0) {
+                    temp = photoSet[j + 1];
+                    photoSet[j + 1] = photoSet[j];
+                    photoSet[j] = temp;
+                }
+
+            }
+        }
+
     }
 
 }

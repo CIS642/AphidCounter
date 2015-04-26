@@ -10,6 +10,7 @@
     <string name="bug_prompt">Choose a Bug</string>
     <string name="crop_prompt">Choose a Crop Type</string>
     <string name="field_prompt">Choose a Field</string>
+    <string name="sort_by_prompt">Sort By...</string>
     <string name="take_photo">Examine Photo</string>
     <string name="about_text">ABOUT TEXT GOES HERE</string>
     <string name="about_label">ABOUT LABEL GOES HERE</string>
@@ -20,18 +21,30 @@
     <string name="addField_label">Add Field</string>
     <string name="selectField_label">Select Field</string>
 
+    <string-array name="sortByCriteria">
+        <item>Sort By...</item>
+        <item>Aphid Count - High to Low</item>
+        <item>Aphid Count - Low to High</item>
+        <item>Date - New to Old</item>
+        <item>Date - Old to New</item>
+        <item>Field Name - Ascending</item>
+        <item>Field Name - Descending</item>
+    </string-array>
+
     <string-array name="bugTypes">
         <item/>
         <item>Aphid</item>
         <item>Mosquito</item>
         <item>Bee</item>
     </string-array>
+
     <string-array name="cropTypes">
         <item/>
         <item>Soy</item>
         <item>Corn</item>
         <item>Wheat</item>
     </string-array>
+
     <string-array name="allFields">
         <item/>
         <item>TEST Field 1</item>

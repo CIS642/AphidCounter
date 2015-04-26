@@ -13,22 +13,22 @@ public class AphidPhoto
     /**
      * The number of aphids in this photo.
      */
-    int aphidCount = 0;
+    private int aphidCount = 0;
 
     /**
      * The filename of the photo.
      */
-    String photoName = "";
+    private String photoName = "";
 
     /**
      * The field the photo was taken in.
      */
-    Field field;
+    private Field field;
 
     /**
      * The date this photo was taken.
      */
-    GregorianCalendar dateTaken;
+    private GregorianCalendar dateTaken;
 
     /**
      * Constructs a new Aphid Photo object.
