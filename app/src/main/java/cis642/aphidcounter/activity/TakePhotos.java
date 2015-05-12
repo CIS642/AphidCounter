@@ -204,8 +204,16 @@ public class TakePhotos extends Activity {
             else if (resultCode == 1)
             {
                 // reset the spinner after coming from the Add Field activity.
-                Spinner selectField = (Spinner) findViewById(R.id.fieldTypeSpinner);
-                selectField.setSelection(0);
+                final Spinner selectField = (Spinner) findViewById(R.id.fieldTypeSpinner);
+                //selectField.setSelection(0);
+                final int position =  (selectField.getAdapter().getCount());
+                selectField.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        selectField.setSelection(position);
+                    }
+                });
+                Log.i("bug index", Integer.toString(selectField.getAdapter().getCount()));
             }
             else if (resultCode == 2)
             {
