@@ -226,13 +226,13 @@ public class ViewHistory extends Activity {
             // The object that will be passed through the button's intent must be declared final.
             final PhotoSet ps = photoSet[i];
 
-            final String photoSetIndex = Integer.toString(i);
-
+            //final String photoSetIndex = Integer.toString(i);
+            final String photoSetId = photoSet[i].GetPhotoSetID();
             // Create the intent for this button.
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
                     Intent myIntent = new Intent(view.getContext(), ViewPhotoSet.class);
-                    myIntent.putExtra("PhotoSet", photoSetIndex);
+                    myIntent.putExtra("PhotoSetId", photoSetId);
                     startActivityForResult(myIntent, 0);
                 }
             });

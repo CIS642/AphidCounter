@@ -42,15 +42,15 @@ public class ViewPhotoSet extends Activity {
         // Get the photoset that was passed to this intent:
         photoSetId = (String) getIntent().getSerializableExtra("PhotoSetId");
 
-        if (null == photoSetId) {
-            // Coming from the View History activity, the index will be passed
-            photoSetIndex = (String) getIntent().getSerializableExtra("PhotoSet");
-            photoSet = psManager.Get(Integer.parseInt(photoSetIndex));
-        }
-        else {
+//        if (null == photoSetId) {
+//            // Coming from the View History activity, the index will be passed
+//            photoSetIndex = (String) getIntent().getSerializableExtra("PhotoSet");
+//            photoSet = psManager.Get(Integer.parseInt(photoSetIndex));
+//        }
+//        else {
             // Coming from the MyActivity activity, the ID will be passed
             photoSet = psManager.GetByID(photoSetId);
-        }
+//        }
 
         aphidCount = 0;
         photoManager = PhotoManager.GetInstance();
